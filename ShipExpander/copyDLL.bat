@@ -1,1 +1,0 @@
-xcopy "bin\Debug\netstandard2.1\JBriggs.ShipExpander.dll" "C:\Projects\LethalCompanyMods\r2modmanPlus-local\LethalCompany\profiles\ShipExpander\BepInEx\plugins" /K /D /H /Y

@@ -11,6 +11,8 @@ namespace ShipExpander.Patch
         static void changeBaseFOV()
         {
             
+            
+            
         }
     }
 }

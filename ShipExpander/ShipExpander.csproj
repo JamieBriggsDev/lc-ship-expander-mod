@@ -36,6 +36,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call copyDLL.bat" />
+    <Exec Command="call tools\postBuild.bat" />
   </Target>
 </Project>
