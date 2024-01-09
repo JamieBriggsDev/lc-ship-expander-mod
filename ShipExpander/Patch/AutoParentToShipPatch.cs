@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using ShipExpander.Core;
 using ShipExpander.Helper;
+using ShipExpander.MonoBehaviour;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public class AutoParentToShipPatch
     static void HarmonyPostFixAwake(ref Vector3 ___positionOffset, ref Vector3 ___startingPosition)
     {
         Vector3 originalPosition = ___positionOffset;
-        ___positionOffset += new Vector3(0f, ConstantVariables.InsideShipHeight, 0f);
+        ___positionOffset += ConstantVariables.InsideShipOffset;
         Core.SELogger.Log("AutoParentToShipPatch",
             $"Adjusting offset for AutoParentToShip object from {originalPosition} -> {___positionOffset}");
         ___startingPosition = ___positionOffset;
@@ -36,7 +37,9 @@ public class AutoParentToShipPatch
         
         var networkObject = __instance.GetComponent<NetworkObject>();
         networkObject.TrySetParent(insideShipGO);
-        
-        
+
+        __instance.gameObject.AddComponent<InsideShipComponent>();
+
+
     }
 }
