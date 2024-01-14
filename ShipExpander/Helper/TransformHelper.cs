@@ -12,11 +12,11 @@ public abstract class TransformHelper
         if (networkObject != null)
         {
             //networkObject.transform.position += distance;
-            gameObject.transform.position += distance;
+            gameObject.transform.localPosition += distance;
         }
         else
         {
-            gameObject.transform.position += distance;
+            gameObject.transform.localPosition += distance;
         }
     }
 }

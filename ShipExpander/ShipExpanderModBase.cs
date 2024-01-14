@@ -33,7 +33,13 @@ public class ShipExpanderModBase : BaseUnityPlugin
         //_harmony.PatchAll();
         _harmony.PatchAll(typeof(CopyShipPatch));
         _harmony.PatchAll(typeof(AutoParentToShipPatch));
+        
     }
 
+    // Keep this commented out, this for some reason disables the mod.
+    /*private void OnDestroy()
+    {
+        _harmony.UnpatchSelf();
+    }*/
 }
     
