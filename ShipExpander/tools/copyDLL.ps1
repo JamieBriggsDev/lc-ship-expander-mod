@@ -15,4 +15,5 @@ Copy-Item "tools\config\com.bepis.bepinex.scriptengine.cfg" -Destination "$PROFI
 Copy-Item "tools\config\BepInEx.cfg" -Destination "$PROFILE_BEPINEX_DIR\config"
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
-Copy-Item "AssetBundles\shaderAssetBundle.unitypackage" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
+Copy-Item "AssetBundles\screencutoutshader" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
+Copy-Item "AssetBundles\screencutoutshader" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
