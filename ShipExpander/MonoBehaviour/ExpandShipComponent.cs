@@ -27,7 +27,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private GameObject _outsideShipTeleporter;
 
 
-    public static AssetBundle ShaderAsset;
 
 
     private List<string> _toIgnore = new()
@@ -55,11 +54,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         "Cameras"
     };
 
-    private void Awake()
-    {
-        // Load assets
-        ShaderAsset = UnityBundleHelper.LoadResource("screencutoutshader");
-    }
+    
 
 
     private void Start()
@@ -209,69 +204,34 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
     private IEnumerator SetupTeleport()
     {
-        _insideShipTeleporter =
-            new GameObjectBuilder().WithNetworkObjectComponent().WithName("InsideTeleporter").WithParent(_insideShip)
-                .GetGameObject();
-        _outsideShipTeleporter =
-            new GameObjectBuilder().WithNetworkObjectComponent().WithName("InsideTeleporter").WithParent(_outsideShip)
-                .GetGameObject();
-        
-        TransformHelper.MoveObject(_insideShipTeleporter.gameObject,new Vector3(-7.2f, 0, -14));
-        TransformHelper.MoveObject(_outsideShipTeleporter.gameObject,new Vector3(-7.2f, 0, -14));
-        
-        bool secondCameraCreated = false;
-        Camera outsideCameraGameObject = null;
+        var secondCameraCreated = false;
         while (!secondCameraCreated)
         {
             try
             {
-                // TODO: Player contains the camera, make new monobehaviour which is added to player which handles the two cameras then setup teleport properly
-                SELogger.Log(gameObject, "Finding Player");
+                SELogger.Log(gameObject, "Finding Player", LogLevel.Debug);
                 var playerContainer = gameObject.transform.Find("Player");
-                SELogger.Log(gameObject, $"Found Player: {playerContainer.name}");
+                SELogger.Log(gameObject, $"Found Player: {playerContainer.name}", LogLevel.Debug);
                 
-                SELogger.Log(gameObject, "Finding ScavengerModel");
+                SELogger.Log(gameObject, "Finding ScavengerModel", LogLevel.Debug);
                 var scavModel = playerContainer.Find("ScavengerModel");
-                SELogger.Log(gameObject, $"Found ScavengerModel: {scavModel.name}");
+                SELogger.Log(gameObject, $"Found ScavengerModel: {scavModel.name}", LogLevel.Debug);
                 
-                SELogger.Log(gameObject, "Finding metarig");
+                SELogger.Log(gameObject, "Finding metarig", LogLevel.Debug);
                 var metaRig = scavModel.Find("metarig");
-                SELogger.Log(gameObject, $"Found metarig: {metaRig.name}");
+                SELogger.Log(gameObject, $"Found metarig: {metaRig.name}", LogLevel.Debug);
                 
-                SELogger.Log(gameObject, "Finding CameraContainer");
+                SELogger.Log(gameObject, "Finding CameraContainer", LogLevel.Debug);
                 var cameraContainer = metaRig.Find("CameraContainer");
-                SELogger.Log(gameObject, $"Found CameraContainer: {cameraContainer.name}");
+                SELogger.Log(gameObject, $"Found CameraContainer: {cameraContainer.name}", LogLevel.Debug);
 
 
-                if (cameraContainer is not null)
-                {
-                    var mainCameraGameObject = cameraContainer.gameObject.GetComponentInChildren<Camera>();
-                    SELogger.Log(gameObject, "Changing inside camera name to MainCameraInside");
-                    mainCameraGameObject.name = "MainCameraInside";
-
-                    SELogger.Log(gameObject, "Creating outside camera");
-                    outsideCameraGameObject = Instantiate(mainCameraGameObject, cameraContainer.transform, true);
-                    outsideCameraGameObject.name = "MainCameraOutside";
-                    outsideCameraGameObject.tag = "Untagged";
-                    var tempFollowComponent = outsideCameraGameObject.gameObject.AddComponent<TempFollowComponent>();
-                    tempFollowComponent.portal = _outsideShipTeleporter.transform;
-                    tempFollowComponent.otherPortal = _insideShipTeleporter.transform;
-                    tempFollowComponent.playerCamera = mainCameraGameObject.transform;
-
-                    SELogger.Log(gameObject, "Disabling Audio Listener on outside camera");
-                    //outsideCameraGameObject.GetComponent<AudioListener>().enabled = false;
-                    //TransformHelper.MoveObject(outsideCameraGameObject.gameObject, -ConstantVariables.InsideShipOffset * 2);
-                    secondCameraCreated = true;
-                }
-                else
-                {
-                    throw new ShipExpanderException();
-                    //SELogger.Log(gameObject, "Could not find MainCamera yet", LogLevel.Warning);
-                }
+                var teleportComponent = cameraContainer.gameObject.AddComponent<TeleportComponent>();
+                teleportComponent.Initialize(_insideShip, _outsideShip);
+                secondCameraCreated = true;
 
                 SELogger.Log(gameObject, "Creating plane");
-                CreatePlane(outsideCameraGameObject, _insideShipTeleporter.transform,
-                    "Render Plane", 5f, 5f);
+                
             }
             catch (Exception e)
             {
@@ -282,76 +242,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         }
     }
 
-    private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, float width,
-        float height)
-    {
-        var shipDoorOffset = new Vector3(-6.4f, 0, -14);
-
-        GameObject g = new GameObject
-        {
-            // Position = -8 0 -14
-            // Rotation = 270 270 0
-            name = planeName,
-            transform =
-            {
-                //localPosition = new Vector3(0,0,0),
-                parent = parentTransform,
-                localEulerAngles = new Vector3(270, 270, 0)
-            }
-        };
-
-        TransformHelper.MoveObject(g, ConstantVariables.InsideShipOffset + shipDoorOffset);
-        g.AddComponent<MeshFilter>();
-        g.AddComponent<MeshRenderer>();
-        g.GetComponent<MeshFilter>().mesh = CreatePlaneMesh(width, height);
-
-        var shader =
-            ShaderAsset.LoadAllAssets<Shader>()
-                [0]; //ShaderAsset.LoadAsset<Shader>("assets/Shader/ScreenCutoutShader");
-        //var find = Shader.Find("Unlit/ScreenCutoutShader");
-        Material m = new Material(shader);
-        m.name = planeName + "_material";
-        //m.shader = Shader.Find("Transparent/Cutout/Diffuse");
-        //m.shader = Shader.Find("Standard");
-
-        Renderer renderer = g.GetComponent<Renderer>();
-        renderer.material = m;
-        if (camera.targetTexture != null)
-        {
-            camera.targetTexture.Release();
-        }
-
-        camera.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
-        renderer.material.mainTexture = camera.targetTexture;
-        renderer.lightProbeUsage = LightProbeUsage.BlendProbes;
-        renderer.reflectionProbeUsage = ReflectionProbeUsage.BlendProbes;
-        renderer.shadowCastingMode = ShadowCastingMode.On;
-        renderer.receiveShadows = true;
-        renderer.motionVectorGenerationMode = MotionVectorGenerationMode.Object;
-
-        return g;
-    }
-
-
-    private Mesh CreatePlaneMesh(float Width, float Height)
-    {
-        Mesh mesh = new Mesh();
-        Vector3[] vertices = new Vector3[]
-        {
-            new Vector3(Width, 0, Height), new Vector3(Width, 0, -Height), new Vector3(-Width, 0, Height),
-            new Vector3(-Width, 0, -Height)
-        };
-        Vector2[] uv = new Vector2[] { new Vector2(1, 1), new Vector2(1, 0), new Vector2(0, 1), new Vector2(0, 0) };
-        int[] triangles = new int[] { 0, 1, 2, 2, 1, 3 };
-        mesh.vertices = vertices;
-        mesh.uv = uv;
-
-
-        mesh.triangles = triangles;
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
-    }
+    
 
 
     private void OnDestroy()
