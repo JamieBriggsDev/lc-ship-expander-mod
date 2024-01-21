@@ -13,7 +13,9 @@ public abstract class GameObjectHelper
         {
             return gameObject;
         }
-        SELogger.Log($"Could not find {name}", LogLevel.Warning);
+
+        SELogger.Log("GameObjectHelper", $"Could not find {name}", LogLevel.Warning);
         return null;
     }
+    
 }

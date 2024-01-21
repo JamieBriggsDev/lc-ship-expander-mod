@@ -6,7 +6,7 @@ namespace ShipExpander.Core;
 
 public abstract class SELogger
 {
-    public static void Log(String message, LogLevel logLevel = LogLevel.Message)
+    private static void Log(String message, LogLevel logLevel = LogLevel.Message)
     {
         ShipExpanderModBase.Log.Log(logLevel, message);
     }
@@ -19,5 +19,15 @@ public abstract class SELogger
     public static void Log(GameObject gameObject, String message, LogLevel logLevel = LogLevel.Message)
     {
         Log(gameObject.name, message, logLevel);
+    }
+    
+    public static void LogInfo(String source, String message)
+    {
+        Log($"({source}) -> {message}", LogLevel.Info);
+    }
+    
+    public static void LogError(String source, String message)
+    {
+        Log($"({source}) -> {message}", LogLevel.Error);
     }
 }
