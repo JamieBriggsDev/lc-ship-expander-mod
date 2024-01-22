@@ -1,4 +1,5 @@
 ﻿using System;
+using ShipExpander.Core;
 using UnityEngine;
 using UnityEngine.Serialization;
 

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using ShipExpander.Builder;
 using ShipExpander.Core;
 using ShipExpander.Helper;
 using Unity.Netcode;
-using Unity.Netcode.Components;
 using UnityEngine;
-using UnityEngine.Rendering;
 using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace ShipExpander.MonoBehaviour;
@@ -22,16 +18,14 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private NetworkObject _insideShipNetworkObject;
     private GameObject _outsideShip;
     private NetworkObject _outsideShipNetworkObject;
-
-    private GameObject _insideShipTeleporter;
-    private GameObject _outsideShipTeleporter;
-
-
+    
 
 
     private List<string> _toIgnore = new()
     {
-        "Player"
+        "Player",
+        "InsideTeleporter",
+        "OutsideTeleporter"
     };
 
     private List<string> _toBeCopiedOutside = new()
@@ -43,6 +37,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         "CatwalkUnderneathSupports",
         "ClimbOntoCatwalkHelper",
         "CatwalkRailLiningB",
+        "LadderShort",
+        "LadderShort (1)",
         // End of catwalk stuff
         "ShipRails",
         "ShipModels2b", // Outside ship parts
@@ -53,8 +49,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         "Cameras"
     };
-
-    
 
 
     private void Start()
@@ -204,34 +198,29 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
     private IEnumerator SetupTeleport()
     {
-        var secondCameraCreated = false;
-        while (!secondCameraCreated)
+        var foundMainCamera = false;
+        Transform playerContainer = null;
+        Transform cameraContainer = null;
+        while (!foundMainCamera)
         {
             try
             {
                 SELogger.Log(gameObject, "Finding Player", LogLevel.Debug);
-                var playerContainer = gameObject.transform.Find("Player");
+                playerContainer = gameObject.transform.Find("Player");
                 SELogger.Log(gameObject, $"Found Player: {playerContainer.name}", LogLevel.Debug);
-                
+
                 SELogger.Log(gameObject, "Finding ScavengerModel", LogLevel.Debug);
                 var scavModel = playerContainer.Find("ScavengerModel");
                 SELogger.Log(gameObject, $"Found ScavengerModel: {scavModel.name}", LogLevel.Debug);
-                
+
                 SELogger.Log(gameObject, "Finding metarig", LogLevel.Debug);
                 var metaRig = scavModel.Find("metarig");
                 SELogger.Log(gameObject, $"Found metarig: {metaRig.name}", LogLevel.Debug);
-                
+
                 SELogger.Log(gameObject, "Finding CameraContainer", LogLevel.Debug);
-                var cameraContainer = metaRig.Find("CameraContainer");
+                cameraContainer = metaRig.Find("CameraContainer");
                 SELogger.Log(gameObject, $"Found CameraContainer: {cameraContainer.name}", LogLevel.Debug);
-
-
-                var teleportComponent = cameraContainer.gameObject.AddComponent<TeleportComponent>();
-                teleportComponent.Initialize(_insideShip, _outsideShip);
-                secondCameraCreated = true;
-
-                SELogger.Log(gameObject, "Creating plane");
-                
+                foundMainCamera = true;
             }
             catch (Exception e)
             {
@@ -240,9 +229,10 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
+        
+        var teleportComponent = cameraContainer.gameObject.AddComponent<TeleportCreatorComponent>();
+        teleportComponent.Initialize(_insideShip, _outsideShip, playerContainer);
     }
-
-    
 
 
     private void OnDestroy()
