@@ -15,6 +15,5 @@ Following this, do a NuGet restore.
 ### R2Modman setup for automatic DLL copying
 > This needs modifying to be more customizable per machine
 
-Next open the file ./ShipExpander/copyDLL.bat and change the second
-parameter to be where the Profile was setup for r2modman and LethalCompany
-to allow the DDL to be automatically copied to the correct profile.
+Next open the file UserDependentVariables.ps1 and change the variables for
+where r2modman handles profiles for LethalCompany, and the profile name.
