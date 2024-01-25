@@ -57,6 +57,7 @@ function configure(){
 
 
 function publish() {
+  echo "TS_REPO: $TS_REPO"
   if [ -n "$TS_DEV" ]; then
     repo="https://thunderstore.dev"
   elif [ -n "$TS_REPO" ]; then
