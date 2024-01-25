@@ -11,7 +11,7 @@ on:
 
 
 jobs:
-  publish:
+  publish-dev:
     runs-on: ubuntu-latest
     steps:
       # Use checkout to publish the files in your repo
@@ -20,7 +20,7 @@ jobs:
         with:
           namespace: jbriggs.dev # the thunderstore 'team' to publish under
           description: ShipExpander mod
-          token: ${{ secrets.TS_TOKEN }}
+          token: ${{ secrets.TS_DEV_TOKEN }}
           name: ShipExpander # the name of the package
           #version: ${{ github.ref_name }} # Use the tag as the package version
           version: 0.0.1 # Use the tag as the package version
