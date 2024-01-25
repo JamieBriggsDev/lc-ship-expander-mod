@@ -1,0 +1,44 @@
+name: Upload Prebuilt Zip
+
+on:
+  push:
+  pull_request:
+    branches:
+      - develop-thunderstore-github-actions
+  workflow_dispatch:
+  
+
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: create test zip
+        run: |
+          sudo apt install zip
+          echo "{ \"namespace\": \"GreenTF\", \"name\": \"test\", \"description\": \"Test\", \"version_number\": \"1.${{ github.run_number }}.0\",  \"dependencies\": [], \"website_url\": \"https://greenboi.me\" }" >> manifest.json
+          zip test.zip ./*
+      - id: pub
+        uses: ./
+        with:
+          namespace: jbriggs.dev
+          name: ShipExpander
+          dev: true
+          token: ${{ secrets.TS_KEY }}
+          description: |
+            Ship expander mod. Need to add more of a description here
+          version: v1.${{ github.run_number }}.0
+          community: lethal-company
+          repo: thunderstore.dev
+          wrap: mods
+          website: "https://jbriggs.dev"
+          categories: |
+            mods
+          deps: |
+            BepInEx-BepInExPack-5.4.2100
+          file: ./test.zip
+      - run: echo ${{ steps.pub.outputs.url }}
+        
