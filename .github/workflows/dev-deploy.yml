@@ -1,0 +1,36 @@
+name: Publish DEV
+
+on:
+  push:
+  pull_request:
+    branches:
+      - develop-thunderstore-github-actions
+  workflow_dispatch:
+
+
+
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+      - uses: GreenTF/upload-thunderstore-package@v4.2
+        with:
+          namespace: jbriggs.dev # the thunderstore 'team' to publish under
+          description: ShipExpander mod
+          token: ${{ secrets.TS_TOKEN }}
+          name: ShipExpander # the name of the package
+          #version: ${{ github.ref_name }} # Use the tag as the package version
+          version: 0.0.1 # Use the tag as the package version
+          community: Northstar
+          repo: thunderstore.dev
+          categories: | # <-- notice this pipe character
+            mods
+          
+      
+      
+
+
+        
