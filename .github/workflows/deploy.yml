@@ -24,7 +24,7 @@ jobs:
       - uses: GreenTF/upload-thunderstore-package@v4.2
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
-          community: test # Not a real community in https://thunderstore.test
+          #community: test # Not a real community in https://thunderstore.test
           namespace: JBriggs_DEV # the thunderstore 'team' to publish under
           name: ShipExpander # the name of the package
           description: ShipExpander mod
@@ -33,9 +33,11 @@ jobs:
           path: './ShipExpander' # Path to ShipExpander project
           dev: true
           repo: thunderstore.dev
-          categories: | # <-- notice this pipe character
-            mods
-          deps: BepInEx-BepInExPack-5.4.2100
+          
+          #categories: | # <-- notice this pipe character
+          #  mods
+          deps: bbepis-BepInExPack-5.4.9
+          #deps: BepInEx-BepInExPack-5.4.2100
           
       
       
