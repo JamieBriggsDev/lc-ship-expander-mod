@@ -13,7 +13,11 @@ a new source for BepInEx needs added to `NuGet.Config`.
 Following this, do a NuGet restore.
 
 ### R2Modman setup for automatic DLL copying
-> This needs modifying to be more customizable per machine
+As part of the dotnet build, if built in Visual Studio or Jetbrain's Rider, dotnet will run a 
+script which copies the required dll and any supporting files to the users R2Modman profile. To do
+this, two environment variables need to be set:
+- $R2MODMAN_DIR (e.g. `C:\Projects\LethalCompanyMods\r2modmanPlus-local`)
+- $R2MODMAN_LETHALCOMPANY_PROFILE (e.g. `MyTestProfile`. This is the profile which you use in R2Modman to test the dll is working as expected)
 
-Next open the file UserDependentVariables.ps1 and change the variables for
-where r2modman handles profiles for LethalCompany, and the profile name.
+If developing on Windows, I recommend using Microsoft's [PowerToys](https://apps.microsoft.com/detail/XP89DCGQ3K6VLD?hl=en-US&gl=US) to do this. 
+There is a tool to create profiles of environment variables which you can enable or disable at your own leisure.

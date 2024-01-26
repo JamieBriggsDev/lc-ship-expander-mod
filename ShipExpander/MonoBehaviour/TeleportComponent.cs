@@ -7,6 +7,7 @@ namespace ShipExpander.MonoBehaviour;
 [RequireComponent(typeof(BoxCollider))]
 public class TeleportComponent : UnityEngine.MonoBehaviour
 {
+    
     private bool _playerIsOverlapping = false;
     private Transform _player;
     private Transform _receiver;
