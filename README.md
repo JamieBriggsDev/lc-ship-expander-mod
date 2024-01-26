@@ -1,5 +1,7 @@
 # Lethal Company - Ship Expander Mod
 
+![Ship Expander Thunderstore Icon](ShipExpander%2Ficon.png)
+
 ## Status
 [![.NET](https://github.com/JamieBriggsDev/lc-ship-expander-mod/actions/workflows/dotnet.yml/badge.svg)](https://github.com/JamieBriggsDev/lc-ship-expander-mod/actions/workflows/dotnet.yml)
 
