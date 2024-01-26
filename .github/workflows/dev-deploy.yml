@@ -12,30 +12,19 @@ on:
 
 jobs:
   publish-dev:
-    env: 
-      TS_REPO: https://thunderstore.dev/
-      TS_COMMUNITY: lethal-company
-      
-      # Uncomment when testing locally, must be unique
-      # NORTHSTAR_VERSION: 0.1.8
-      
-      # Thunderstore info and descriptions
-      TS_NAMESPACE: jbriggs.dev
-      TS_MOD_NAME: ShipExpander
-      TS_MOD_DESCRIPTION: |
-        ShipExpander
-        This mod will expand the ship size to support more than 4 players better.
     runs-on: ubuntu-latest
     steps:
       # Use checkout to publish the files in your repo
       - uses: actions/checkout@v3
-      - uses: GreenTF/upload-thunderstore-package@v4.2
+      - uses: GreenTF/upload-thunderstore-package@v4.3
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
-          community: $TS_COMMUNITY
-          namespace: $TS_NAMESPACE
-          name: $TS_MOD_NAME # the name of the package
-          description: $TS_MOD_DESCRIPTION
+          community: lethal-company
+          namespace: jbriggs.dev
+          name: ShipExpander # the name of the package
+          description: |
+            ShipExpander
+            This mod will expand the ship size to support more than 4 players better.
           version: 0.0.1 # Use the tag as the package version
           #version: ${{ github.ref_name }} # Use the tag as the package version
           path: './ShipExpander' # Path to ShipExpander project
