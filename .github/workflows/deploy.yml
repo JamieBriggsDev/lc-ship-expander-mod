@@ -23,16 +23,16 @@ jobs:
       - uses: actions/checkout@v3
       - uses: GreenTF/upload-thunderstore-package@v4.2
         with:
-          namespace: jbriggs.dev # the thunderstore 'team' to publish under
-          description: ShipExpander mod
-          token: ${{ secrets.TS_TOKEN }}
-          name: ShipExpander # the name of the package
-          #version: ${{ github.ref_name }} # Use the tag as the package version
-          #path: '../../ # Path to ShipExpander project
-          dev: true
-          version: 0.0.1 # Use the tag as the package version
+          token: ${{ secrets.TS_DEV_TOKEN }}
           community: lethal-comopany
-          repo: thunderstore.io
+          namespace: jbriggs.dev # the thunderstore 'team' to publish under
+          name: ShipExpander # the name of the package
+          description: ShipExpander mod
+          version: 0.0.1 # Use the tag as the package version
+          #version: ${{ github.ref_name }} # Use the tag as the package version
+          path: './ShipExpander # Path to ShipExpander project
+          dev: true
+          repo: thunderstore.dev
           categories: | # <-- notice this pipe character
             mods
           deps: BepInEx-BepInExPack-5.4.2100
