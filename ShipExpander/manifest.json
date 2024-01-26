@@ -1,9 +1,0 @@
-{
-    "name": "ShipExpander",
-    "version_number": "0.0.1",
-    "website_url": "https://github.com/JamieBriggsDev/lc-ship-expander-mod",
-    "description": "Expands the ship",
-    "dependencies": [
-        "BepInEx-BepInExPack-5.4.2100"
-    ]
-}
