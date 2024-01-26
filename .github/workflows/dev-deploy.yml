@@ -2,12 +2,9 @@ name: Publish DEV
 
 on:
   push:
-  pull_request:
     branches:
-      - develop-thunderstore-github-actions
+      - main
   workflow_dispatch:
-
-
 
 
 jobs:

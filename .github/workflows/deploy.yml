@@ -21,15 +21,14 @@ jobs:
     steps:
       # Use checkout to publish the files in your repo
       - uses: actions/checkout@v3
-      - uses: GreenTF/upload-thunderstore-package@v4.2
+      - uses: GreenTF/upload-thunderstore-package@v4.3
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
           community: lethal-company
           namespace: JBriggs_DEV # the thunderstore 'team' to publish under
           name: ShipExpander # the name of the package
           description: ShipExpander mod
-          version: 0.0.1 # Use the tag as the package version
-          #version: ${{ github.ref_name }} # Use the tag as the package version
+          version: ${{ github.ref_name }} # Use the tag as the package version
           path: './ShipExpander' # Path to ShipExpander project
           dev: true
           repo: thunderstore.io
