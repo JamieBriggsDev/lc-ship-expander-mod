@@ -7,6 +7,7 @@ $UNITY_ENGINE_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity
 $UNITY_ENGINE_NETWORK_RUNTIME_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll"
 $UNITY_ENGINE_NETWORK_COMPONENTS_RUNTIME_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity.Netcode.Components.dll"
 
+$DOWNLOADS_DIR = ".\_downloads"
 
 Write-Output "Assembly-CSharp.dll location: $ASSEMBLY_CSHARP_DLL";
 Write-Output "UnityEngine.dll location: $ASSEMBLY_CSHARP_DLL";
@@ -19,11 +20,32 @@ Copy-Item $UNITY_ENGINE_DDL -Destination ".\externalDLLs"
 Copy-Item $UNITY_ENGINE_NETWORK_RUNTIME_DDL -Destination ".\externalDLLs"
 Copy-Item $UNITY_ENGINE_NETWORK_COMPONENTS_RUNTIME_DDL -Destination ".\externalDLLs"
 
+Write-Output "##########    Initial setup               ##########"
+Write-Output "Recreating downloads folder"
+if(Test-Path -Path $DOWNLOADS_DIR){
+    Remove-Item $DOWNLOADS_DIR -Force -Recurse
+}
+New-Item -Path $DOWNLOADS_DIR -ItemType "directory"
 
+Write-Output "##########    Downloading tcli            ##########"
+
+$THUNDERSTORE_CLI_VERSION = "0.2.3"
+$THUNDERSTORE_CLI_DOWNLOAD_URL = "https://github.com/thunderstore-io/thunderstore-cli/releases/download/$THUNDERSTORE_CLI_VERSION/tcli-$THUNDERSTORE_CLI_VERSION-win-x64.zip";
+$TCLI_DIR = "$DOWNLOADS_DIR\expanded\tcli"
+$TCLI = "$TCLI_DIR\tcli"
+
+# Remove directory if already existing
+Write-Output "##########    Downloading Thunderstore CLI $THUNDERSTORE_CLI_VERSION  ###########"
+Write-Output "Starting download..."
+Invoke-WebRequest "$THUNDERSTORE_CLI_DOWNLOAD_URL" -OutFile "$DOWNLOADS_DIR\tcli.zip"
+Write-Output "Finished downloading from $THUNDERSTORE_CLI_DOWNLOAD_URL"
+
+Write-Output "##########    Extracting Thunderstore CLI $THUNDERSTORE_CLI_VERSION  ###########"
+Write-Output "Starting extracting $DOWNLOADS_DIR\tcli.zip"
+Expand-Archive "$DOWNLOADS_DIR\tcli.zip" -DestinationPath "$DOWNLOADS_DIR\expanded\tcli" -Force
+Write-Output "Finished extracting to $DOWNLOADS_DIR\expanded\tcli"
 
 Write-Output "##########    Downloading BepInEx.Debug   ##########"
-
-$DOWNLOADS_DIR = ".\_downloads"
 
 $BEPINEX_DEBUG_RELEASE_VERSION = "r10";
 $BEPINEX_DEBUG_TOOLS_DOWNLOAD_URL = "https://github.com/BepInEx/BepInEx.Debug/releases/download/$BEPINEX_DEBUG_RELEASE_VERSION"
@@ -35,12 +57,6 @@ $BEPINEX_MIRROR_INTERNAL_LOGS_DOWNLOAD = "$BEPINEX_DEBUG_TOOLS_DOWNLOAD_URL/Mirr
 $BEPINEX_SCRIPT_ENGINE_DOWNLOAD = "$BEPINEX_DEBUG_TOOLS_DOWNLOAD_URL/ScriptEngine_$BEPINEX_DEBUG_RELEASE_VERSION.zip"
 $BEPINEX_SIMPLE_MONO_PROFILER_DOWNLOAD = "$BEPINEX_DEBUG_TOOLS_DOWNLOAD_URL/SimpleMonoProfiler_$BEPINEX_DEBUG_RELEASE_VERSION.zip"
 $BEPINEX_STARTUP_PROFILER_DOWNLOAD = "$BEPINEX_DEBUG_TOOLS_DOWNLOAD_URL/StartupProfiler_$BEPINEX_DEBUG_RELEASE_VERSION.zip"
-
-Write-Output "Recreating downloads folder"
-if(Test-Path -Path $DOWNLOADS_DIR){
-    Remove-Item $DOWNLOADS_DIR -Force -Recurse
-}
-New-Item -Path $DOWNLOADS_DIR -ItemType "directory"
 
 
 Write-Output "Downloading BepInEx.Debug.ConstructorProfiler $BEPINEX_DEBUG_RELEASE_VERSION from $BEPINEX_CONSTRUCTOR_PROFILER_DOWNLOAD"
