@@ -1,4 +1,4 @@
-name: Publish DEV
+name: Publish
 
 # Run when a new release is... released
 on:
@@ -30,7 +30,7 @@ jobs:
           description: ShipExpander mod
           version: ${{ github.ref_name }} # Use the tag as the package version
           path: './ShipExpander' # Path to ShipExpander project
-          dev: true
+          dev: false
           repo: thunderstore.io
           categories: | # <-- notice this pipe character
             mods
