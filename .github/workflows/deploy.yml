@@ -36,7 +36,7 @@ jobs:
           categories: | # <-- notice this pipe character
             mods
           #deps: bbepis-BepInExPack-5.4.9
-          #deps: BepInEx-BepInExPack-5.4.2100
+          deps: BepInEx-BepInExPack-5.4.2100
           
       
       
