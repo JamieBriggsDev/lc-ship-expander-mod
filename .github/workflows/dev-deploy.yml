@@ -23,11 +23,14 @@ jobs:
           token: ${{ secrets.TS_DEV_TOKEN }}
           name: ShipExpander # the name of the package
           #version: ${{ github.ref_name }} # Use the tag as the package version
+          #path: '../../ # Path to ShipExpander project
+          dev: true
           version: 0.0.1 # Use the tag as the package version
           community: lethal-comopany
           repo: thunderstore.dev
           categories: | # <-- notice this pipe character
             mods
+          deps: BepInEx-BepInExPack-5.4.2100
           
       
       
