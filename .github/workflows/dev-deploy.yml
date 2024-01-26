@@ -33,7 +33,8 @@ jobs:
           # > Commented out due to no categories existing for community test
           categories: | # <-- notice this pipe character
             mods
-          deps: bbepis-BepInExPack-5.4.9
+          deps: | # <-- notice this pipe character
+            bbepis-BepInExPack-5.4.9
           
       
       
