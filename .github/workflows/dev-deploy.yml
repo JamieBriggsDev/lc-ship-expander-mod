@@ -20,7 +20,7 @@ jobs:
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
           community: lethal-company
-          namespace: ShipExpander
+          namespace: JBriggs_DEV
           name: ShipExpander # the name of the package
           description: |
             ShipExpander
