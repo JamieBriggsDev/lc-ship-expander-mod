@@ -19,7 +19,7 @@ jobs:
       - uses: GreenTF/upload-thunderstore-package@v4.3
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
-          #community: risk-of-thunder # Not a real community in https://thunderstore.test
+          community: risk-of-thunder # Not a real community in https://thunderstore.dev
           namespace: JBriggs_DEV
           name: ShipExpander # the name of the package
           description: |
