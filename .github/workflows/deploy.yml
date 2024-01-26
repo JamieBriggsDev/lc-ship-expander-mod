@@ -24,7 +24,7 @@ jobs:
       - uses: GreenTF/upload-thunderstore-package@v4.2
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
-          community: lethal-comopany
+          community: test # Not a real community in https://thunderstore.test
           namespace: JBriggs_DEV # the thunderstore 'team' to publish under
           name: ShipExpander # the name of the package
           description: ShipExpander mod
