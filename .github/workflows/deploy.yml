@@ -12,6 +12,18 @@ jobs:
     steps:
       # Use checkout to publish the files in your repo
       - uses: actions/checkout@v3
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build ShipExpander --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+        
       - uses: GreenTF/upload-thunderstore-package@v4.3
         with:
           token: ${{ secrets.TS_TOKEN }}
@@ -20,7 +32,7 @@ jobs:
           name: ShipExpander # the name of the package
           description: ShipExpander mod
           version: ${{ github.ref_name }} # Use the tag as the package version
-          path: './ShipExpander' # Path to ShipExpander project
+          path: './ShipExpander/bin/publish-Release' # Path to ShipExpander project
           repo: thunderstore.io
           categories: | # <-- notice this pipe character
             mods

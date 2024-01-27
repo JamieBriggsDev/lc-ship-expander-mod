@@ -13,8 +13,7 @@ jobs:
     steps:
       # Use checkout to publish the files in your repo
       - uses: actions/checkout@v3
-        
-      - uses: actions/setup-dotnet@v3
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -22,7 +21,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build ShipExpander --no-restore # Defaults to debug
       - name: Test
         run: dotnet test --no-build --verbosity normal
         
@@ -37,7 +36,7 @@ jobs:
             This mod will expand the ship size to support more than 4 players better.
           version: v0.${{ github.run_number }}.0 # Use the tag as the package version
           #version: ${{ github.ref_name }} # Use the tag as the package version
-          path: './ShipExpander' # Path to ShipExpander project
+          path: './ShipExpander/bin/publish-Debug' # Path to ShipExpander project
           dev: true
           repo: thunderstore.dev
           # > Commented out due to no categories existing for community test

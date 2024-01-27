@@ -33,7 +33,8 @@
     <Reference Include="Unity.Netcode.Components" HintPath="..\externalDLLs\Unity.Netcode.Components.dll" Publicize="true"/>
   </ItemGroup>
   
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingByReSharper)' == 'true' Or '$(BuildingInsideVisualStudio)' == 'true'">
-    <Exec Command="call tools\postBuild.bat" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Condition="'$(BuildingByReSharper)' == 'true' Or '$(BuildingInsideVisualStudio)' == 'true'" Command="call tools\postBuild.bat" />
+    <Exec Command="call tools\createPublishFolder.bat $(ConfigurationName)" />
   </Target>
 </Project>
