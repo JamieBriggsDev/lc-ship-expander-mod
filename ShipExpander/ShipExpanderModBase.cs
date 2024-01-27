@@ -27,6 +27,7 @@ public class ShipExpanderModBase : BaseUnityPlugin
         {
             _instance = this;
         }
+        
             
         Core.SELogger.Log(gameObject, $"Plugin {PluginInfo.PLUGIN_GUID} is loaded by jbriggs.dev");
             

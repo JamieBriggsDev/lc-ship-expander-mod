@@ -18,16 +18,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
-      - name: Change to project directory
-        run: cd ShipExpander
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
         run: dotnet build ShipExpander --no-restore # Defaults to debug
       - name: Test
         run: dotnet test --no-build --verbosity normal
-      - name: Go back to solution directory
-        run: cd ..
         
       - uses: GreenTF/upload-thunderstore-package@v4.3
         with:
