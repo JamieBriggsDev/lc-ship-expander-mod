@@ -35,6 +35,7 @@
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Condition="'$(BuildingByReSharper)' == 'true' Or '$(BuildingInsideVisualStudio)' == 'true'" Command="call .\tools\postBuild.bat" />
+    <Exec Command="call ls" />
     <Exec Command="call .\tools\createPublishFolder.bat $(ConfigurationName)" />
   </Target>
 </Project>
