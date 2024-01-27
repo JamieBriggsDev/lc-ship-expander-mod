@@ -24,7 +24,7 @@ jobs:
         run: dotnet build ShipExpander --no-restore # Defaults to debug
       - name: Test
         run: dotnet test --no-build --verbosity normal
-      - name: Create folder for publish#
+      - name: Create folder for publish
         shell: pwsh
         run: ./createPublishFolder.ps1 -config Debug
   publish-dev:
