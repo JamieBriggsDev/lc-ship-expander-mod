@@ -1,9 +1,10 @@
 ﻿param ($config)
 
-$PUBLISH_DIR = "bin\publish-$config"
+$PUBLISH_DIR = "ShipExpander\bin\publish-$config"
 
 Write-Output "1:    Creating initial folder structure"
 
+Write-Output "Creating directory: $PUBLISH_DIR"
 New-Item -Path "$PUBLISH_DIR" -ItemType "directory"
 
 
