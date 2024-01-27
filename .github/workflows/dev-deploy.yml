@@ -21,7 +21,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build ShipExpander --no-restore # Defaults to debug
+        run: |
+          ls
+          dotnet build ShipExpander --no-restore # Defaults to debug
       - name: Test
         run: dotnet test --no-build --verbosity normal
   publish-dev:
