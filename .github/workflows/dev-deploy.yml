@@ -3,7 +3,7 @@ name: Publish DEV
 on:
   push:
     branches:
-      - main
+      - develop-thunderstore-github-actions
   workflow_dispatch:
 
 

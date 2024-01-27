@@ -26,7 +26,7 @@ jobs:
             mods
           #deps: bbepis-BepInExPack-5.4.9
           deps: | # <-- notice this pipe character
-            BepInEx-BepInExPack-5.4.2100
+            BepInEx-BepInExPack-5.4.21
           
       
       
