@@ -37,11 +37,13 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private List<string> _toBeCopiedOutside = new()
     {
         "WallInsulator",
+        // Catwalk stuff should really be moved to _toIgnoreInside but leave for debugging
         "CatwalkRailLining",
         "CatwalkShip",
         "CatwalkUnderneathSupports",
         "ClimbOntoCatwalkHelper",
         "CatwalkRailLiningB",
+        // End of catwalk stuff
         "ShipRails",
         "ShipModels2b", // Outside ship parts
         "ShipInside", // More outside ship parts, despite naming
@@ -55,7 +57,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private void Awake()
     {
         // Load assets
-        //ShaderAsset = UnityBundleHelper.LoadResource("shaderAssetBundle.unitypackage");
+        // TODO: Work out why this doesn't work
+        ShaderAsset = UnityBundleHelper.LoadResource("shaderAssetBundle.unitypackage");
     }
 
 

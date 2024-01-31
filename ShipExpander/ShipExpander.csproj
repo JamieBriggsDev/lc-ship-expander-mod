@@ -33,7 +33,7 @@
     <Reference Include="Unity.Netcode.Components" HintPath="..\externalDLLs\Unity.Netcode.Components.dll" Publicize="true"/>
   </ItemGroup>
   
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == '' Or '$(BuildingInsideVisualStudio)' == 'true'">
     <Exec Command="call tools\postBuild.bat" />
   </Target>
 </Project>
