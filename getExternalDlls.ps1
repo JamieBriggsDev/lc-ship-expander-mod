@@ -4,14 +4,17 @@ $LETHAL_COMPANY_DIRECTORY = "F:\SteamLibrary\steamapps\common\Lethal Company"
 
 $ASSEMBLY_CSHARP_DLL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Assembly-CSharp.dll"
 $UNITY_ENGINE_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\UnityEngine.dll"
+$UNITY_ENGINE_NETWORK_RUNTIME_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll"
 
 
 Write-Output "Assembly-CSharp.dll location: $ASSEMBLY_CSHARP_DLL";
 Write-Output "UnityEngine.dll location: $ASSEMBLY_CSHARP_DLL";
+Write-Output "Unity.Netcode.Runtime.dll location: $UNITY_ENGINE_NETWORK_RUNTIME_DDL";
 
 
 Copy-Item $ASSEMBLY_CSHARP_DLL -Destination ".\externalDLLs"
 Copy-Item $UNITY_ENGINE_DDL -Destination ".\externalDLLs"
+Copy-Item $UNITY_ENGINE_NETWORK_RUNTIME_DDL -Destination ".\externalDLLs"
 
 
 
