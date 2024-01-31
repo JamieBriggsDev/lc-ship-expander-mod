@@ -226,17 +226,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             try
             {
                 // TODO: Player contains the camera, make new monobehaviour which is added to player which handles the two cameras then setup teleport properly
-
-                
-                // TODO: Why is this not finding the correct camera
-                //var cam = gameObject.transform.Find("");
-                //var cameras = FindObjectsByType<Camera>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
-                /*foreach (Camera camera in cameras)
-                {
-                 SELogger.Log(gameObject,  $"{camera}", LogLevel.Warning);
-                }*/
-                //var cameraContainer = GameObjectHelper.FindNestedObjectChild(this.transform, "CameraContainer");
-                // GameObject container goes Player->ScavengerModel->metarig->CameraContainer
                 SELogger.Log(gameObject, "Finding Player");
                 var playerContainer = gameObject.transform.Find("Player");
                 SELogger.Log(gameObject, $"Found Player: {playerContainer.name}");
