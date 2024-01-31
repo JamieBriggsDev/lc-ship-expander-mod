@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace ShipExpander.Patch
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
-    public class PlayerFOVPatch
+    public class CopyShipPatch
     {
         
         [HarmonyPostfix]
