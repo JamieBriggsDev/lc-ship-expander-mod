@@ -31,21 +31,29 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private List<string> _toBeCopiedOutside = new()
     {
         "WallInsulator",
-        "ShipRails",
         "ShipModels2b", // Outside ship parts
         "ShipInside", // More outside ship parts, despite naming
         // Lighting
-        //"HangingLamp"
+        "ShipElectricLights"
     };
 
     private List<string> _toIgnoreInside = new()
     {
         "Cameras",
+        // Ship stuff
+        "Cube.004",
+        "Cube.005",
+        "Cube.006",
+        "Cube.007",
+        "Cube.008",
         "ThrusterBackRight",
         "ThrusterBackLeft",
         "ThrusterFrontRight",
         "ThrusterFrontLeft",
+        "ShipSupportBeams",
         // Catwalk stuff should really be moved to _toIgnoreInside but leave for debugging
+        "ShipRails",
+        "ShipRailPosts",
         "CatwalkRailLining",
         "CatwalkShip",
         "CatwalkUnderneathSupports",
@@ -53,6 +61,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         "CatwalkRailLiningB",
         "LadderShort",
         "LadderShort (1)",
+        "LargePipe (1)"
         // End of catwalk stuff
     };
 
@@ -67,6 +76,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             .WithNetworkObjectComponent(ref _insideShipNetworkObject)
             .WithNetworkTransformComponent()
             .GetGameObject();
+
+        _insideShip.layer = 10001;
 
         SELogger.Log(gameObject, "Creating container for outsideShip");
         _outsideShip = new GameObjectBuilder().WithName("outsideShip").WithParent(this.gameObject)

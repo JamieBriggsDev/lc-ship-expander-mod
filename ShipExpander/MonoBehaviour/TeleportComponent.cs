@@ -11,11 +11,16 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
     private bool _playerIsOverlapping = false;
     private Transform _player;
     private Transform _receiver;
+    private Camera _mainCamera;
+    private bool _isGoingOutside;
 
-    public void Initialize(Transform player, Transform receiver)
+    public void Initialize(Transform player, Transform receiver, Camera mainCamera, bool isGoingOutside)
     {
         _player = player;
         _receiver = receiver;
+        _mainCamera = mainCamera;
+        _isGoingOutside = isGoingOutside;
+        SELogger.Log(gameObject, $"MainCamera Mask: {mainCamera.cullingMask}");
     }
 
     // Update is called once per frame

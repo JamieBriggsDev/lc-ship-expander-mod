@@ -109,8 +109,8 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
 
 
         SELogger.Log(gameObject, "Initializing colliderBoxes up");
-        _insideColliderBox.Initialize(_player, _outsideColliderBox.transform);
-        _outsideColliderBox.Initialize(_player, _insideColliderBox.transform);
+        _insideColliderBox.Initialize(_player, _outsideColliderBox.transform, _playerCamera, false);
+        _outsideColliderBox.Initialize(_player, _insideColliderBox.transform, _playerCamera, true);
     }
 
     private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, bool flipped = false)
