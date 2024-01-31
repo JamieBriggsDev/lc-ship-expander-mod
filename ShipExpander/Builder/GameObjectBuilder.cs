@@ -14,6 +14,7 @@ public class GameObjectBuilder
     public GameObjectBuilder()
     {
         this.Reset();
+        this._gameObject.transform.localPosition = Vector3.zero;
     }
 
     private void Reset()
@@ -34,6 +35,13 @@ public class GameObjectBuilder
         return this;
     }
     
+    public GameObjectBuilder WithNetworkObjectComponent(ref NetworkObject networkObject)
+    {
+        this._isNetworkObject = true;
+        networkObject = this._gameObject.AddComponent<NetworkObject>();
+        return this;
+    }
+    
 
     public GameObjectBuilder WithNetworkTransformComponent()
     {
@@ -44,7 +52,9 @@ public class GameObjectBuilder
 
     public GameObjectBuilder WithParent(GameObject parent)
     {
+        Vector3 originalPosition = this._gameObject.transform.position;
         this._parent = parent;
+        this._gameObject.transform.position = originalPosition;
         return this;
     }
 
@@ -69,6 +79,7 @@ public class GameObjectBuilder
             // Set parent
             this._gameObject.transform.parent = this._parent.transform;
         }
+        this._gameObject.transform.localPosition = Vector3.zero;
         return this._gameObject;
     }
 }
