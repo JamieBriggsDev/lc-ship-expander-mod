@@ -1,7 +1,11 @@
-﻿Write-Output "1:    Copying most up to date BepInEx.Debug tools"
+﻿Write-Output "1:    Getting external variables"
+. ..\UserDependentVariables.ps1
 
-$R2MODMAN_PROFILE_NAME = "ShipExpander"
-$PROFILE_BEPINEX_DIR = "C:\Projects\LethalCompanyMods\r2modmanPlus-local\LethalCompany\profiles\$R2MODMAN_PROFILE_NAME\BepInEx"
+Write-Host "$R2MODMAN_PROFILE_DIR/$R2MODMAN_PROFILE_NAME"
+
+$PROFILE_BEPINEX_DIR = "$R2MODMAN_PROFILE_DIR\$R2MODMAN_PROFILE_NAME\BepInEx"
+
+Write-Output "2:    Copying most up to date BepInEx.Debug tools"
 
 Write-Output "Copying DebInEx.Debug.ScriptEngine"
 Copy-Item "..\_downloads\expanded\ScriptEngine\BepInEx\plugins\" -Recurse -Destination "$PROFILE_BEPINEX_DIR\" -Force
@@ -15,5 +19,5 @@ Copy-Item "tools\config\com.bepis.bepinex.scriptengine.cfg" -Destination "$PROFI
 Copy-Item "tools\config\BepInEx.cfg" -Destination "$PROFILE_BEPINEX_DIR\config"
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
-Copy-Item "AssetBundles\screencutoutshader" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
-Copy-Item "AssetBundles\screencutoutshader" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
+Copy-Item "AssetBundles\additionalshaders" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
+Copy-Item "AssetBundles\additionalshaders" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
