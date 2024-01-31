@@ -11,7 +11,6 @@ public abstract class GameObjectHelper
         var gameObject = GameObject.Find(name);
         if (gameObject != null)
         {
-            SELogger.Log($"Found {name} {gameObject.transform}");
             return gameObject;
         }
         SELogger.Log($"Could not find {name}", LogLevel.Warning);
