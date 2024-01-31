@@ -34,14 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Use checkout to publish the files in your repo
-      - uses: actions/checkout@v3
-        
-      - uses: actions/download-artifact@master
+      - id: actions-checkout
+        uses: actions/checkout@v3
+
+      - id: download-artifact
+        uses: actions/download-artifact@master
         with:
           name: to-publish-release
           path: ./ShipExpander/bin/publish-Release
         
-      - uses: GreenTF/upload-thunderstore-package@v4.3
+      - id: publish
+        uses: GreenTF/upload-thunderstore-package@v4.3
         with:
           token: ${{ secrets.TS_TOKEN }}
           community: lethal-company
@@ -55,7 +58,10 @@ jobs:
             mods
           deps: | # <-- notice this pipe character
             BepInEx-BepInExPack-5.4.21
-          
+            
+      - id: get-url
+        name: Get download URL
+        run: echo ${{ steps.publish.outputs.url }}
       
       
 
