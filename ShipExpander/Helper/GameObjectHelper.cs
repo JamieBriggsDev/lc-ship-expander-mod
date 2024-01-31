@@ -14,8 +14,7 @@ public abstract class GameObjectHelper
             SELogger.Log($"Found {name} {gameObject.transform}");
             return gameObject;
         }
-
-        SELogger.Log($"Could not find {name}", LogLevel.Error);
-        throw new ShipExpanderException($"Could not find GameObject with name: {name}");
+        SELogger.Log($"Could not find {name}", LogLevel.Warning);
+        return null;
     }
 }
