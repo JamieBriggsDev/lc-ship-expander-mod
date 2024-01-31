@@ -9,4 +9,9 @@ public class InsideShipComponent : UnityEngine.MonoBehaviour
     {
         this.transform.localPosition += ConstantVariables.InsideShipOffset;
     }
+
+    private void OnDestroy()
+    {
+        this.transform.localPosition -= ConstantVariables.InsideShipOffset;
+    }
 }

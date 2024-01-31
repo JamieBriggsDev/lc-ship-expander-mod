@@ -12,5 +12,6 @@ $DLL_NAME = "JBriggs.ShipExpander.dll"
 
 Write-Output "Copying bin\Debug\netstandard2.1\$DLL_NAME"
 Copy-Item "tools\config\com.bepis.bepinex.scriptengine.cfg" -Destination "$PROFILE_BEPINEX_DIR\config"
+Copy-Item "tools\config\BepInEx.cfg" -Destination "$PROFILE_BEPINEX_DIR\config"
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force

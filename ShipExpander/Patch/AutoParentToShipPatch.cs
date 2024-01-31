@@ -16,7 +16,7 @@ namespace ShipExpander.Patch;
 [HarmonyPatch(typeof(AutoParentToShip))]
 public class AutoParentToShipPatch
 {
-    [HarmonyPatch("Awake")]
+    /*[HarmonyPatch("Awake")]
     [HarmonyPostfix]
     static void HarmonyPostFixAwake(ref Vector3 ___positionOffset, ref Vector3 ___startingPosition)
     {
@@ -26,20 +26,28 @@ public class AutoParentToShipPatch
             $"Adjusting offset for AutoParentToShip object from {originalPosition} -> {___positionOffset}");
         ___startingPosition = ___positionOffset;
     }
-    
-    
+
+
     [HarmonyPatch("Awake")]
     [HarmonyPrefix]
     static void HarmonyPreFix(ref AutoParentToShip __instance)
     {
         var insideShipGO = GameObjectHelper.FindObjectByName("insideShip");
         if (insideShipGO == null) return;
-        
+
         var networkObject = __instance.GetComponent<NetworkObject>();
         networkObject.TrySetParent(insideShipGO);
 
         __instance.gameObject.AddComponent<InsideShipComponent>();
+    }*/
 
-
+    [HarmonyPostfix]
+    [HarmonyPatch("MoveToOffset")]
+    static void HarmonyPostFixMoveToOffset(ref AutoParentToShip __instance)
+    {
+        var transform = __instance.transform;
+        var localPosition = transform.localPosition;
+        localPosition += ConstantVariables.InsideShipOffset;
+        transform.localPosition = localPosition;
     }
 }
