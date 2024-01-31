@@ -1,4 +1,5 @@
-﻿using BepInEx.Logging;
+﻿using System.Collections;
+using BepInEx.Logging;
 using ShipExpander.Builder;
 using ShipExpander.Core;
 using ShipExpander.Helper;
@@ -53,7 +54,7 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
 
         // Get player camera
         _playerCamera = GetComponentInChildren<Camera>();
-
+        
         GameObject gameCameraPrefab = UnityBundleHelper.GetCameraContainerPrefab();
         var cameraToCreate = gameCameraPrefab.GetComponentInChildren<Camera>();
         cameraToCreate.name = "TEST";
@@ -109,8 +110,21 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
 
 
         SELogger.Log(gameObject, "Initializing colliderBoxes up");
-        _insideColliderBox.Initialize(_player, _outsideColliderBox.transform, _playerCamera, false);
-        _outsideColliderBox.Initialize(_player, _insideColliderBox.transform, _playerCamera, true);
+        var mainCameraHideFromCameraComponent = _playerCamera.gameObject.AddComponent<HideInsideShipComponent>();
+        mainCameraHideFromCameraComponent.ShowInsideShipLayer();
+        ArrayList layerNames=new ArrayList();
+        for(int i=8;i<=31;i++) //user defined layers start with layer 8 and unity supports 31 layers
+        {
+            var layerN=LayerMask.LayerToName(i); //get the name of the layer
+            SELogger.Log(gameObject, $"Layer found({i}) - {layerN}");
+        }
+        SELogger.Log(gameObject, $"insideShip.layer = ({insideShip.layer}){LayerMask.LayerToName(insideShip.layer)}");
+        /*
+        insideShip.layer = ConstantVariables.InsideShipLayer;
+        */
+        SELogger.Log(gameObject, $"insideShip.layer = ({insideShip.layer}){LayerMask.LayerToName(insideShip.layer)}");
+        _insideColliderBox.Initialize(_player, _outsideColliderBox.transform, mainCameraHideFromCameraComponent, true);
+        _outsideColliderBox.Initialize(_player, _insideColliderBox.transform, mainCameraHideFromCameraComponent, false);
     }
 
     private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, bool flipped = false)

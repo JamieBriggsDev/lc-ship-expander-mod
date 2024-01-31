@@ -1,5 +1,4 @@
-﻿
-using ShipExpander.Core;
+﻿using ShipExpander.Core;
 using UnityEngine;
 
 namespace ShipExpander.MonoBehaviour;
@@ -7,28 +6,29 @@ namespace ShipExpander.MonoBehaviour;
 [RequireComponent(typeof(BoxCollider))]
 public class TeleportComponent : UnityEngine.MonoBehaviour
 {
-    
     private bool _playerIsOverlapping = false;
     private Transform _player;
     private Transform _receiver;
-    private Camera _mainCamera;
-    private bool _isGoingOutside;
+    private HideInsideShipComponent _mainCamera;
+    private bool _isOutside;
 
-    public void Initialize(Transform player, Transform receiver, Camera mainCamera, bool isGoingOutside)
+    public void Initialize(Transform player, Transform receiver, HideInsideShipComponent hideInsideShipComponent,
+        bool isGoingOutside)
     {
         _player = player;
         _receiver = receiver;
-        _mainCamera = mainCamera;
-        _isGoingOutside = isGoingOutside;
-        SELogger.Log(gameObject, $"MainCamera Mask: {mainCamera.cullingMask}");
+        _mainCamera = hideInsideShipComponent;
+        _isOutside = isGoingOutside;
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
         if (_playerIsOverlapping)
         {
             Vector3 portalToPlayer = _player.position - transform.position;
-            SELogger.Log(gameObject, $"Player is overlapping with collider component. portalToPlayer: {portalToPlayer}");
+            SELogger.Log(gameObject,
+                $"Player is overlapping with collider component. portalToPlayer: {portalToPlayer}");
             float dotProduct = Vector3.Dot(transform.up, portalToPlayer);
 
             // If this is true: The player has moved across the portal
@@ -43,13 +43,23 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
                 Vector3 positionOffset = Quaternion.Euler(0f, rotationDiff, 0f) * portalToPlayer;
                 _player.position = _receiver.position + positionOffset;
 
+                if (_isOutside)
+                {
+                    _mainCamera.HideInsideShipLayer();
+                }
+                else
+                {
+                    _mainCamera.ShowInsideShipLayer();
+                }
+
                 _playerIsOverlapping = false;
             }
+
             SELogger.Log(gameObject, $"Player is overlapping with collider component. Dot product: {dotProduct}");
         }
     }
 
-    void OnTriggerEnter (Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
@@ -57,13 +67,11 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
         }
     }
 
-    void OnTriggerExit (Collider other)
+    void OnTriggerExit(Collider other)
     {
         if (other.tag == "Player")
         {
             _playerIsOverlapping = false;
         }
     }
-    
-    
 }

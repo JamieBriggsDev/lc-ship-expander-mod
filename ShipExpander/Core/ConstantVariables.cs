@@ -4,9 +4,6 @@ namespace ShipExpander.Core;
 
 public abstract class ConstantVariables
 {
-#if DEBUG
     public static readonly Vector3 InsideShipOffset = new Vector3(0f, 20f, 0);
-#else
-    public static readonly Vector3 InsideShipOffset = new Vector3(0f, 500f, 0);
-#endif
+    public static readonly int InsideShipLayer = 31; // Can be from 4-31
 }
