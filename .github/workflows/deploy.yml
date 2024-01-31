@@ -5,15 +5,6 @@ on:
   release:
     types: [published]
 
-#on:
-#  push:
-#  pull_request:
-#    branches:
-#      - develop-thunderstore-github-actions
-#  workflow_dispatch:
-  
-
-
 
 jobs:
   publish:
@@ -30,7 +21,6 @@ jobs:
           description: ShipExpander mod
           version: ${{ github.ref_name }} # Use the tag as the package version
           path: './ShipExpander' # Path to ShipExpander project
-          dev: false
           repo: thunderstore.io
           categories: | # <-- notice this pipe character
             mods
