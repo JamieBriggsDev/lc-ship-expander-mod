@@ -3,7 +3,7 @@ name: Publish DEV
 on:
   push:
     branches:
-      - develop-thunderstore-github-actions
+      - main
   workflow_dispatch:
 
 
@@ -36,14 +36,17 @@ jobs:
     needs: build-dotnet
     steps:
       # Use checkout to publish the files in your repo
-      - uses: actions/checkout@v3
+      - id: actions-checkout
+        uses: actions/checkout@v3
         
-      - uses: actions/download-artifact@master
+      - id: download-artifact  
+        uses: actions/download-artifact@master
         with:
           name: to-publish-dev
           path: ./ShipExpander/bin/publish-Debug
-          
-      - uses: GreenTF/upload-thunderstore-package@v4.3
+           
+      - id: publish-dev
+        uses: GreenTF/upload-thunderstore-package@v4.3
         with:
           token: ${{ secrets.TS_DEV_TOKEN }}
           community: riskofrain2 # Not a real community in https://thunderstore.dev
@@ -57,11 +60,16 @@ jobs:
           path: './ShipExpander/bin/publish-Debug' # Path to ShipExpander project
           dev: true
           repo: thunderstore.dev
-          # > Commented out due to no categories existing for community test
           categories: | # <-- notice this pipe character
             mods
           deps: | # <-- notice this pipe character
             bbepis-BepInExPack-5.4.9
+          
+      - id: get-url
+        name: Get download URL
+        run: echo ${{ steps.publish-dev.outputs.url }}
+      
+      
           
       
       

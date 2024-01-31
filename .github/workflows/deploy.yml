@@ -7,12 +7,12 @@ on:
 
 
 jobs:
-  publish:
+  build-dotnet:
     runs-on: ubuntu-latest
     steps:
       # Use checkout to publish the files in your repo
       - uses: actions/checkout@v3
-        
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -20,9 +20,26 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build ShipExpander --configuration Release --no-restore
+        run: dotnet build ShipExpander --no-restore # Defaults to debug
       - name: Test
         run: dotnet test --no-build --verbosity normal
+      - name: Create folder for publish
+        shell: pwsh
+        run: ./createPublishFolder.ps1 -config Release
+      - uses: actions/upload-artifact@master
+        with:
+          name: to-publish-release
+          path: ./ShipExpander/bin/publish-Release
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+        
+      - uses: actions/download-artifact@master
+        with:
+          name: to-publish-release
+          path: ./ShipExpander/bin/publish-Release
         
       - uses: GreenTF/upload-thunderstore-package@v4.3
         with:
@@ -32,11 +49,10 @@ jobs:
           name: ShipExpander # the name of the package
           description: ShipExpander mod
           version: ${{ github.ref_name }} # Use the tag as the package version
-          path: './ShipExpander/bin/publish-Release' # Path to ShipExpander project
+          path: './ShipExpander/bin/publish-Release' # Path to ShipExpander dlls
           repo: thunderstore.io
           categories: | # <-- notice this pipe character
             mods
-          #deps: bbepis-BepInExPack-5.4.9
           deps: | # <-- notice this pipe character
             BepInEx-BepInExPack-5.4.21
           
