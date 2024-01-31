@@ -30,6 +30,7 @@
     <Reference Include="Assembly-CSharp" HintPath="..\externalDLLs\Assembly-CSharp.dll" Publicize="true"/>
     <Reference Include="UnityEngine" HintPath="..\externalDLLs\UnityEngine.dll" Publicize="true"/>
     <Reference Include="Unity.Netcode.Runtime" HintPath="..\externalDLLs\Unity.Netcode.Runtime.dll" Publicize="true"/>
+    <Reference Include="Unity.Netcode.Components" HintPath="..\externalDLLs\Unity.Netcode.Components.dll" Publicize="true"/>
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
