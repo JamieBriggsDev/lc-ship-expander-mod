@@ -1,0 +1,45 @@
+name: Publish DEV
+
+# Run when a new release is... released
+on:
+  release:
+    types: [published]
+
+#on:
+#  push:
+#  pull_request:
+#    branches:
+#      - develop-thunderstore-github-actions
+#  workflow_dispatch:
+  
+
+
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+      - uses: GreenTF/upload-thunderstore-package@v4.3
+        with:
+          token: ${{ secrets.TS_DEV_TOKEN }}
+          community: lethal-company
+          namespace: JBriggs_DEV # the thunderstore 'team' to publish under
+          name: ShipExpander # the name of the package
+          description: ShipExpander mod
+          version: ${{ github.ref_name }} # Use the tag as the package version
+          path: './ShipExpander' # Path to ShipExpander project
+          dev: true
+          repo: thunderstore.io
+          categories: | # <-- notice this pipe character
+            mods
+          #deps: bbepis-BepInExPack-5.4.9
+          deps: | # <-- notice this pipe character
+            BepInEx-BepInExPack-5.4.2100
+          
+      
+      
+
+
+        

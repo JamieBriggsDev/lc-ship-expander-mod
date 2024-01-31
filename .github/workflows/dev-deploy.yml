@@ -1,0 +1,40 @@
+name: Publish DEV
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+
+jobs:
+  publish-dev:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+      - uses: GreenTF/upload-thunderstore-package@v4.3
+        with:
+          token: ${{ secrets.TS_DEV_TOKEN }}
+          community: riskofrain2 # Not a real community in https://thunderstore.dev
+          namespace: JBriggs_DEV
+          name: ShipExpander # the name of the package
+          description: |
+            ShipExpander
+            This mod will expand the ship size to support more than 4 players better.
+          version: 0.0.1 # Use the tag as the package version
+          #version: ${{ github.ref_name }} # Use the tag as the package version
+          path: './ShipExpander' # Path to ShipExpander project
+          dev: true
+          repo: thunderstore.dev
+          # > Commented out due to no categories existing for community test
+          categories: | # <-- notice this pipe character
+            mods
+          deps: | # <-- notice this pipe character
+            bbepis-BepInExPack-5.4.9
+          
+      
+      
+
+
+        

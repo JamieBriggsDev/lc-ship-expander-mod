@@ -1,5 +1,10 @@
 ﻿Write-Output "1:    Getting external variables"
-. ..\UserDependentVariables.ps1
+$R2MODMAN_PROFILE_DIR="$Env:R2MODMAN_DIR\LethalCompany\profiles"
+$R2MODMAN_PROFILE_NAME="$Env:R2MODMAN_LETHALCOMPANY_PROFILE"
+
+if (-not $env:R2MODMAN_DIR -or -not $env:R2MODMAN_LETHALCOMPANY_PROFILE ) { 
+    exit
+}
 
 Write-Host "$R2MODMAN_PROFILE_DIR/$R2MODMAN_PROFILE_NAME"
 
