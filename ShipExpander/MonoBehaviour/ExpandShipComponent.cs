@@ -31,6 +31,20 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private List<string> _toBeCopiedOutside = new()
     {
         "WallInsulator",
+        "ShipRails",
+        "ShipModels2b", // Outside ship parts
+        "ShipInside", // More outside ship parts, despite naming
+        // Lighting
+        //"HangingLamp"
+    };
+
+    private List<string> _toIgnoreInside = new()
+    {
+        "Cameras",
+        "ThrusterBackRight",
+        "ThrusterBackLeft",
+        "ThrusterFrontRight",
+        "ThrusterFrontLeft",
         // Catwalk stuff should really be moved to _toIgnoreInside but leave for debugging
         "CatwalkRailLining",
         "CatwalkShip",
@@ -40,14 +54,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         "LadderShort",
         "LadderShort (1)",
         // End of catwalk stuff
-        "ShipRails",
-        "ShipModels2b", // Outside ship parts
-        "ShipInside", // More outside ship parts, despite naming
-    };
-
-    private List<string> _toIgnoreInside = new()
-    {
-        "Cameras"
     };
 
 
@@ -72,6 +78,9 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         // Move inside ship up by 50
         TransformHelper.MoveObject(_insideShip, ConstantVariables.InsideShipOffset);
         SELogger.Log(gameObject, $"insideShip updated with local position of {_insideShip.transform.localPosition}");
+        
+        // Do this better
+        //_insideShip.transform.localScale.x *= 1.5f;
 
         // Move start game lever. For some reason in the FixInsideShipHierarchy method, this specific
         //  GameObject does not want to move to the new insideShip location so doing it here specifically.

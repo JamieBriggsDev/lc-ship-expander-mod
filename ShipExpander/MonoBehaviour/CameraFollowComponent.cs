@@ -5,13 +5,13 @@ using UnityEngine.Serialization;
 
 namespace ShipExpander.MonoBehaviour;
 
-public class TempFollowComponent : UnityEngine.MonoBehaviour
+public class CameraFollowComponent : UnityEngine.MonoBehaviour
 {
     public Transform playerCamera;
     public Transform portal;
     public Transform otherPortal;
 
-    private void Update()
+    private void LateUpdate()
     {
         Vector3 playerOffsetFromPortal = playerCamera.position - otherPortal.position;
         transform.position = portal.position + playerOffsetFromPortal;

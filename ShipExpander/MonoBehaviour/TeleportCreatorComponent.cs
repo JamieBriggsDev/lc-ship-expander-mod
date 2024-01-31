@@ -54,15 +54,21 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
         // Get player camera
         _playerCamera = GetComponentInChildren<Camera>();
 
+        GameObject gameCameraPrefab = UnityBundleHelper.GetCameraContainerPrefab();
+        var cameraToCreate = gameCameraPrefab.GetComponentInChildren<Camera>();
+        cameraToCreate.name = "TEST";
+        cameraToCreate.allowHDR = false;
+        cameraToCreate.allowMSAA = false;
         // Create inside camera
         SELogger.Log(gameObject, "Creating inside camera name");
         _cameraInside = Instantiate(_playerCamera, transform, true);
         _cameraInside.name = "MainCameraInside";
         _cameraInside.tag = "Untagged";
+        _cameraInside.aspect = _playerCamera.aspect;
         //SELogger.Log(gameObject, "Disabling Audio Listener on inside camera");
         //_cameraInside.GetComponent<AudioListener>().enabled = false;
         SELogger.Log(gameObject, "Adding TempFollowComponent to insideCamera");
-        var insideFollowCameraComponent = _cameraInside.gameObject.AddComponent<TempFollowComponent>();
+        var insideFollowCameraComponent = _cameraInside.gameObject.AddComponent<CameraFollowComponent>();
         SELogger.Log(gameObject, "Setting variables to tempFollowComponent on inside camera");
         insideFollowCameraComponent.portal = _insideShipTeleporter.transform;
         insideFollowCameraComponent.otherPortal = _outsideShipTeleporter.transform;
@@ -73,10 +79,11 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
         _cameraOutside = Instantiate(_playerCamera, transform, true);
         _cameraOutside.name = "MainCameraOutside";
         _cameraOutside.tag = "Untagged";
+        _cameraOutside.aspect = _playerCamera.aspect;
         //SELogger.Log(gameObject, "Disabling Audio Listener on inside camera");
         //_cameraOutside.GetComponent<AudioListener>().enabled = false;
         SELogger.Log(gameObject, "Adding TempFollowComponent to outsideCamera");
-        var outsideFollowCameraComponent = _cameraOutside.gameObject.AddComponent<TempFollowComponent>();
+        var outsideFollowCameraComponent = _cameraOutside.gameObject.AddComponent<CameraFollowComponent>();
         SELogger.Log(gameObject, "Setting variables to tempFollowComponent on outside camera");
         outsideFollowCameraComponent.portal = _outsideShipTeleporter.transform;
         outsideFollowCameraComponent.otherPortal = _insideShipTeleporter.transform;
