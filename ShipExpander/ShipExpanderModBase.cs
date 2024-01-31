@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using ShipExpander.Patch;
 
 namespace ShipExpander
 {
@@ -23,6 +24,7 @@ namespace ShipExpander
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
             
             _harmony.PatchAll(typeof(ShipExpanderModBase));
+            _harmony.PatchAll(typeof(CopyShipPatch));
         }
         
     }
