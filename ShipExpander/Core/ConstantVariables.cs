@@ -1,6 +1,12 @@
-﻿namespace ShipExpander.Core;
+﻿using UnityEngine;
 
-public class ConstantVariables
+namespace ShipExpander.Core;
+
+public abstract class ConstantVariables
 {
-    public static readonly float InsideShipHeight = 50f;
+#if DEBUG
+    public static readonly Vector3 InsideShipOffset = new Vector3(0f, 50f, 0);
+#else
+    public static readonly Vector3 InsideShipOffset = new Vector3(0f, 500f, 0);
+#endif
 }

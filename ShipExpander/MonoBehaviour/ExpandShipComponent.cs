@@ -21,6 +21,17 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private GameObject _outsideShip;
     private NetworkObject _outsideShipNetworkObject;
 
+    private List<string> _shipPartsToCopyOutside = new List<string>()
+    {
+        "WallInsulator",
+        "CatwalkShip"
+    };
+
+    private List<string> _shipPartsForJustOutside = new List<string>()
+    {
+        "Cameras"
+    };
+
 
     private void Start()
     {
@@ -39,46 +50,53 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             .GetGameObject();
         _outsideShipNetworkObject = _outsideShip.GetComponent<NetworkObject>();
 
+        // Move inside ship up by 50
+        TransformHelper.MoveObject(_insideShip, ConstantVariables.InsideShipOffset);
 
-        // Do remaining setup as a coroutine to allow objects to be spawned after a frame
-        StartCoroutine(PostStartSetup());
+        var findObjectByName = GameObjectHelper.FindObjectByName("StartGameLever");
+        findObjectByName.transform.localPosition += ConstantVariables.InsideShipOffset;
+
+        StartCoroutine(CopyObjectsForOutside());
     }
 
-    IEnumerator PostStartSetup()
+    private void LateUpdate()
     {
-        yield return new WaitForEndOfFrame();
+        FixInsideShipHierarchy();
+    }
 
+    private void FixInsideShipHierarchy()
+    {
         // Moving existing children of this gameobject to insideShip
-        SELogger.Log(gameObject, "Moving existing children of this gameObject to insideShip");
-        SELogger.Log(gameObject, $"There are {transform.childCount} in {gameObject.name}");
-
-        while (gameObject.transform.childCount > 2)
+        foreach (Transform child in gameObject.transform)
         {
-            foreach (Transform child in gameObject.transform)
+            // Should ignore if child has physics prop component as props should not belong to ship
+            if (child.GetComponent<PhysicsProp>() != null ||
+                _shipPartsForJustOutside.Contains(child.gameObject.name)) continue;
+
+            if (child.gameObject == _insideShip || child.gameObject == _outsideShip || child == null) continue;
+
+            SELogger.Log(gameObject, $"1: Moving object into insideShip: {child.gameObject.name}");
+
+            var childNetworkObject = child.gameObject.GetComponent<NetworkObject>();
+            if (childNetworkObject != null)
             {
-                SELogger.Log(gameObject, $"1: Moving object into insideShip: {child.gameObject.name}");
-                // https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/networkobject-parenting/
-                if (child.gameObject == _insideShip || child.gameObject == _outsideShip || child == null) continue;
+                SELogger.Log(gameObject, $"2: (NE) Changing child.transform.parent: {child.gameObject.name}");
+                var trySetParent = childNetworkObject.TrySetParent(_insideShipNetworkObject.transform);
 
-                var childNetworkObject = child.gameObject.GetComponent<NetworkObject>();
-                if (childNetworkObject != null)
-                {
-                    SELogger.Log(gameObject, $"2: (NE) Changing child.transform.parent: {child.gameObject.name}");
-                    var trySetParent = childNetworkObject.TrySetParent(_insideShipNetworkObject.transform);
+                if (trySetParent) continue;
 
-                    if (trySetParent) continue;
-
-                    SELogger.Log(gameObject, $"Could not set parent for {child.gameObject.name}", LogLevel.Error);
-                    child.transform.parent = _insideShipNetworkObject.transform;
-                }
-                else
-                {
-                    SELogger.Log(gameObject, $"2: (GO) Changing child.transform.parent: {child.gameObject.name}");
-                    child.transform.parent = _insideShip.transform;
-                }
+                SELogger.Log(gameObject, $"Could not set parent for {child.gameObject.name}", LogLevel.Error);
+                child.transform.parent = _insideShipNetworkObject.transform;
+            }
+            else
+            {
+                SELogger.Log(gameObject, $"2: (GO) Changing child.transform.parent: {child.gameObject.name}");
+                child.transform.parent = _insideShip.transform;
             }
 
-            yield return new WaitForSeconds(2);
+            if (child.gameObject.GetComponent<InsideShipComponent>() != null) continue;
+
+            child.gameObject.AddComponent<InsideShipComponent>();
         }
 
         // Some items are not found within the hangarShip gameObject. Get them now
@@ -86,14 +104,35 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         {
             "ChangableSuit(Clone)"
         };
-        foreach (var gameObjectToMove in specialGameObjectNames.Select(gameObjectName =>
-                     GameObjectHelper.FindObjectByName(gameObjectName)))
+        foreach (var gameObjectToMove in specialGameObjectNames.Select(GameObjectHelper.FindObjectByName))
         {
-            gameObjectToMove.transform.parent = _insideShip.transform;
+            if (gameObjectToMove.transform.parent != _insideShip.transform)
+            {
+                gameObjectToMove.transform.parent = _insideShip.transform;
+            }
         }
+    }
 
-        // Move inside ship up by 50
-        TransformHelper.MoveObject(_insideShip, new Vector3(0f, ConstantVariables.InsideShipHeight, 0f));
-        yield return new WaitForEndOfFrame();
+    private IEnumerator CopyObjectsForOutside()
+    {
+        while (_shipPartsToCopyOutside.Count > 0)
+        {
+            foreach (var gameObjectName in _shipPartsToCopyOutside)
+            {
+                SELogger.Log(this.gameObject, $"Copying {gameObjectName} to outsideShip");
+                var findObjectByName = GameObjectHelper.FindObjectByName(gameObjectName);
+                var insideShipComponent = findObjectByName.GetComponent<InsideShipComponent>();
+                if (insideShipComponent != null)
+                {
+                    Destroy(insideShipComponent);
+                }
+
+                Instantiate(findObjectByName, _outsideShip.transform);
+
+                _shipPartsToCopyOutside.Remove(gameObjectName);
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
     }
 }
