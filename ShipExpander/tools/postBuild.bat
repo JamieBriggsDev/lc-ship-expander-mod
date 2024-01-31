@@ -1,0 +1,1 @@
+Powershell.exe -ExecutionPolicy Unrestricted -file ".\tools\copyDLL.ps1"
