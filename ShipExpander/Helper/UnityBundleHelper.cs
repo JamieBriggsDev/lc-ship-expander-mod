@@ -17,6 +17,11 @@ public abstract class UnityBundleHelper
             SELogger.Log("UnityBundleHelper", "Failed to load custom assets.", LogLevel.Error); 
         }
 
+        foreach (var obj in output.LoadAllAssets())
+        {
+            SELogger.Log("UnityBundleHelper", $"Loaded asset: ${obj}", LogLevel.Info); 
+        }
+
         return output;
     }
 }

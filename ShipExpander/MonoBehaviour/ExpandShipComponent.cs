@@ -25,8 +25,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
     private GameObject _insideShipTeleporter;
     private GameObject _outsideShipTeleporter;
-    
-    
+
+
     public static AssetBundle ShaderAsset;
 
 
@@ -34,6 +34,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         "Player"
     };
+
     private List<string> _toBeCopiedOutside = new()
     {
         "WallInsulator",
@@ -58,7 +59,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         // Load assets
         // TODO: Work out why this doesn't work
-        ShaderAsset = UnityBundleHelper.LoadResource("shaderAssetBundle.unitypackage");
+        ShaderAsset = UnityBundleHelper.LoadResource("screencutoutshader");
     }
 
 
@@ -72,7 +73,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             .WithNetworkObjectComponent(ref _insideShipNetworkObject)
             .WithNetworkTransformComponent()
             .GetGameObject();
-        
+
         SELogger.Log(gameObject, "Creating container for outsideShip");
         _outsideShip = new GameObjectBuilder().WithName("outsideShip").WithParent(this.gameObject)
             .WithNetworkObjectComponent(ref _outsideShipNetworkObject)
@@ -101,16 +102,56 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         */
 
 
-        //SetupTeleport();
-        
+        StartCoroutine(SetupTeleport());
     }
 
-    private void SetupTeleport()
+    private IEnumerator SetupTeleport()
     {
         _insideShipTeleporter =
-            new GameObjectBuilder().WithNetworkObjectComponent().WithName("InsideTeleporter").WithParent(_insideShip).GetGameObject();
-        CreatePlane(FindObjectOfType<Camera>(), _insideShipTeleporter.transform, "Render Plane", 5f, 5f);
+            new GameObjectBuilder().WithNetworkObjectComponent().WithName("InsideTeleporter").WithParent(_insideShip)
+                .GetGameObject();
+        bool secondCameraCreated = false;
+        Camera outsideCameraGameObject = null;
+        while (!secondCameraCreated)
+        {
+            // TODO: Player contains the camera, make new monobehaviour which is added to player which handles the two cameras then setup teleport properly
+            
+            // TODO: Why is this not finding the correct camera
+            var cameras = FindObjectsByType<Camera>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
+            /*foreach (Camera camera in cameras)
+            {
+             SELogger.Log(gameObject,  $"{camera}", LogLevel.Warning);
+            }*/
+            var mainCamera = cameras
+                .Find(x => x.name.Equals("MainCamera"));
+            if (mainCamera is not null)
+            {
+                var mainCameraGameObject = mainCamera.gameObject;
+                SELogger.Log(gameObject, "Changing inside camera name to MainCameraInside");
+                mainCameraGameObject.name = "MainCameraInside";
+
+                SELogger.Log(gameObject, "Creating outside camera");
+                outsideCameraGameObject = Instantiate(mainCamera, mainCameraGameObject.transform, true);
+                mainCamera.name = "MainCameraOutside";
+                mainCamera.tag = "Untagged";
+
+                SELogger.Log(gameObject, "Disabling Audio Listener on outside camera");
+                //outsideCameraGameObject.GetComponent<AudioListener>().enabled = false;
+                //TransformHelper.MoveObject(outsideCameraGameObject.gameObject, -ConstantVariables.InsideShipOffset);
+                secondCameraCreated = true;
+            }
+            else
+            {
+                //SELogger.Log(gameObject, "Could not find MainCamera yet", LogLevel.Warning);
+                yield return new WaitForFixedUpdate();
+            }
+        }
+
+        SELogger.Log(gameObject, "Creating plane");
+        CreatePlane(outsideCameraGameObject, _insideShipTeleporter.transform,
+            "Render Plane", 5f, 5f);
     }
+
 
     private void LateUpdate()
     {
@@ -124,7 +165,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         foreach (Transform child in gameObject.transform)
         {
             var childGameObject = child.gameObject;
-            
+
             // Should ignore if child has physics prop component as props should not belong to ship
             if (child.GetComponent<PhysicsProp>() != null ||
                 _toIgnoreInside.Contains(childGameObject.name) || _toIgnore.Contains(childGameObject.name)) continue;
@@ -187,14 +228,17 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
                 SELogger.Log(gameObject, $"Copying object to outsideShip {gameObjectName}");
                 var instantiatedOutsideObject = Instantiate(findObjectByName, _outsideShip.transform, true);
-                SELogger.Log(gameObject, $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})");
+                SELogger.Log(gameObject,
+                    $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})");
                 TransformHelper.MoveObject(instantiatedOutsideObject, ConstantVariables.InsideShipOffset);
                 // Why do I need to do this twice for this object specifically?
                 if (gameObjectName.Equals("ShipInside"))
                 {
                     TransformHelper.MoveObject(instantiatedOutsideObject, -ConstantVariables.InsideShipOffset);
                 }
-                SELogger.Log(gameObject, $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})");
+
+                SELogger.Log(gameObject,
+                    $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})");
                 var insideShipComponent = instantiatedOutsideObject.GetComponent<InsideShipComponent>();
                 if (insideShipComponent != null)
                 {
@@ -208,7 +252,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         }
     }
 
-    private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, float width, float height)
+    private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, float width,
+        float height)
     {
         GameObject g = new GameObject();
         g.name = planeName;
@@ -221,7 +266,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         // Unable to read header from archive file: C:/Projects/LethalCompanyMods/r2modmanPlus-local/LethalCompany/profiles/ShipExpander/BepInEx/plugins/shaderAssetBundle.unitypackage
         // Failed to read data for the AssetBundle 'C:\Projects\LethalCompanyMods\r2modmanPlus-local\LethalCompany\profiles\ShipExpander\BepInEx\plugins\shaderAssetBundle.unitypackage'.
         // TODO: Is the above errors happening here, or in the Awake method?
-        var shader = ShaderAsset.LoadAllAssets<Shader>()[0]; //ShaderAsset.LoadAsset<Shader>("assets/Shader/ScreenCutoutShader");
+        var shader =
+            ShaderAsset.LoadAllAssets<Shader>()[0]; //ShaderAsset.LoadAsset<Shader>("assets/Shader/ScreenCutoutShader");
         //var find = Shader.Find("Unlit/ScreenCutoutShader");
         Material m = new Material(shader);
         m.name = planeName + "_material";
@@ -234,6 +280,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         {
             camera.targetTexture.Release();
         }
+
         camera.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
         renderer.material.mainTexture = camera.targetTexture;
         renderer.lightProbeUsage = LightProbeUsage.BlendProbes;
@@ -241,29 +288,32 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         renderer.shadowCastingMode = ShadowCastingMode.On;
         renderer.receiveShadows = true;
         renderer.motionVectorGenerationMode = MotionVectorGenerationMode.Object;
- 
+
         return g;
     }
- 
- 
+
+
     private Mesh CreatePlaneMesh(float Width, float Height)
     {
         Mesh mesh = new Mesh();
-        Vector3[] vertices = new Vector3[] { new Vector3(Width, 0, Height), new Vector3(Width, 0, -Height), new Vector3(-Width, 0, Height), new Vector3(-Width, 0, -Height) };
+        Vector3[] vertices = new Vector3[]
+        {
+            new Vector3(Width, 0, Height), new Vector3(Width, 0, -Height), new Vector3(-Width, 0, Height),
+            new Vector3(-Width, 0, -Height)
+        };
         Vector2[] uv = new Vector2[] { new Vector2(1, 1), new Vector2(1, 0), new Vector2(0, 1), new Vector2(0, 0) };
         int[] triangles = new int[] { 0, 1, 2, 2, 1, 3 };
         mesh.vertices = vertices;
         mesh.uv = uv;
-       
- 
+
+
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
         return mesh;
     }
-    
-    
-    
+
+
     private void OnDestroy()
     {
         SELogger.Log(gameObject, "Removing ExpandShipComponent");
