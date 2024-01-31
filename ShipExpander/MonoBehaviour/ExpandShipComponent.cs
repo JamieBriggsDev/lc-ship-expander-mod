@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using ShipExpander.Builder;
 using ShipExpander.Core;
 using ShipExpander.Helper;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using UnityEngine.Rendering;
 using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace ShipExpander.MonoBehaviour;
@@ -20,6 +22,13 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private NetworkObject _insideShipNetworkObject;
     private GameObject _outsideShip;
     private NetworkObject _outsideShipNetworkObject;
+
+    private GameObject _insideShipTeleporter;
+    private GameObject _outsideShipTeleporter;
+    
+    
+    public static AssetBundle ShaderAsset;
+
 
     private List<string> _toIgnore = new()
     {
@@ -42,6 +51,12 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         "Cameras"
     };
+
+    private void Awake()
+    {
+        // Load assets
+        //ShaderAsset = UnityBundleHelper.LoadResource("shaderAssetBundle.unitypackage");
+    }
 
 
     private void Start()
@@ -81,6 +96,17 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         /*
             findObjectByName.transform.localPosition += ConstantVariables.InsideShipOffset;
         */
+
+
+        //SetupTeleport();
+        
+    }
+
+    private void SetupTeleport()
+    {
+        _insideShipTeleporter =
+            new GameObjectBuilder().WithNetworkObjectComponent().WithName("InsideTeleporter").WithParent(_insideShip).GetGameObject();
+        CreatePlane(FindObjectOfType<Camera>(), _insideShipTeleporter.transform, "Render Plane", 5f, 5f);
     }
 
     private void LateUpdate()
@@ -179,6 +205,62 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         }
     }
 
+    private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, float width, float height)
+    {
+        GameObject g = new GameObject();
+        g.name = planeName;
+        g.transform.parent = parentTransform;
+        g.transform.localEulerAngles = new Vector3(270, 0, 0);
+        g.AddComponent<MeshFilter>();
+        g.AddComponent<MeshRenderer>();
+        g.GetComponent<MeshFilter>().mesh = CreatePlaneMesh(width, height);
+
+        // Unable to read header from archive file: C:/Projects/LethalCompanyMods/r2modmanPlus-local/LethalCompany/profiles/ShipExpander/BepInEx/plugins/shaderAssetBundle.unitypackage
+        // Failed to read data for the AssetBundle 'C:\Projects\LethalCompanyMods\r2modmanPlus-local\LethalCompany\profiles\ShipExpander\BepInEx\plugins\shaderAssetBundle.unitypackage'.
+        // TODO: Is the above errors happening here, or in the Awake method?
+        var shader = ShaderAsset.LoadAllAssets<Shader>()[0]; //ShaderAsset.LoadAsset<Shader>("assets/Shader/ScreenCutoutShader");
+        //var find = Shader.Find("Unlit/ScreenCutoutShader");
+        Material m = new Material(shader);
+        m.name = planeName + "_material";
+        //m.shader = Shader.Find("Transparent/Cutout/Diffuse");
+        //m.shader = Shader.Find("Standard");
+
+        Renderer renderer = g.GetComponent<Renderer>();
+        renderer.material = m;
+        if (camera.targetTexture != null)
+        {
+            camera.targetTexture.Release();
+        }
+        camera.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
+        renderer.material.mainTexture = camera.targetTexture;
+        renderer.lightProbeUsage = LightProbeUsage.BlendProbes;
+        renderer.reflectionProbeUsage = ReflectionProbeUsage.BlendProbes;
+        renderer.shadowCastingMode = ShadowCastingMode.On;
+        renderer.receiveShadows = true;
+        renderer.motionVectorGenerationMode = MotionVectorGenerationMode.Object;
+ 
+        return g;
+    }
+ 
+ 
+    private Mesh CreatePlaneMesh(float Width, float Height)
+    {
+        Mesh mesh = new Mesh();
+        Vector3[] vertices = new Vector3[] { new Vector3(Width, 0, Height), new Vector3(Width, 0, -Height), new Vector3(-Width, 0, Height), new Vector3(-Width, 0, -Height) };
+        Vector2[] uv = new Vector2[] { new Vector2(1, 1), new Vector2(1, 0), new Vector2(0, 1), new Vector2(0, 0) };
+        int[] triangles = new int[] { 0, 1, 2, 2, 1, 3 };
+        mesh.vertices = vertices;
+        mesh.uv = uv;
+       
+ 
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        return mesh;
+    }
+    
+    
+    
     private void OnDestroy()
     {
         SELogger.Log(gameObject, "Removing ExpandShipComponent");
