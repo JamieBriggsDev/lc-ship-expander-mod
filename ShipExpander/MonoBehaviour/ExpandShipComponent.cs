@@ -64,7 +64,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         // End of catwalk stuff
     };
 
-
     private void Start()
     {
         SELogger.Log(gameObject, "###############      Updated scripts");
@@ -86,9 +85,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         // Move inside ship up by 50
         TransformHelper.MoveObject(_insideShip, ConstantVariables.InsideShipOffset);
         SELogger.Log(gameObject, $"insideShip updated with local position of {_insideShip.transform.localPosition}");
-
-        // Do this better
-        //_insideShip.transform.localScale.x *= 1.5f;
 
         // Move start game lever. For some reason in the FixInsideShipHierarchy method, this specific
         //  GameObject does not want to move to the new insideShip location so doing it here specifically.
@@ -136,7 +132,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             {
                 //SELogger.Log(gameObject, $"2: (NE) Changing child.transform.parent: {child.gameObject.name}");
                 var trySetParent = childNetworkObject.TrySetParent(_insideShipNetworkObject.transform);
-                //childNetworkObject.gameObject.layer = ConstantVariables.InsideShipLayer;
 
                 if (trySetParent) continue;
 
@@ -146,7 +141,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             else
             {
                 //SELogger.Log(gameObject, $"2: (GO) Changing child.transform.parent: {child.gameObject.name}");
-                //child.gameObject.layer = ConstantVariables.InsideShipLayer;
                 child.transform.parent = _insideShip.transform;
             }
 
@@ -166,32 +160,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             {
                 gameObjectToMove.transform.parent = _insideShip.transform;
             }
-        }
-
-        // TODO: Ensure items are set correctly
-        //SetLayerRecursively(_insideShip, ConstantVariables.InsideShipLayer);
-    }
-
-    private void SetLayerRecursively(GameObject obj, int newLayer)
-    {
-        if (null == obj || _toIgnore.Contains(obj.name) ||
-            (obj.layer == LayerMask.NameToLayer("Colliders") 
-             || obj.layer == LayerMask.NameToLayer("Triggers")
-             || obj.layer == 31))
-        {
-            return;
-        }
-
-        obj.layer = newLayer;
-
-        foreach (Transform child in obj.transform)
-        {
-            if (null == child)
-            {
-                continue;
-            }
-
-            SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 
@@ -271,7 +239,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
-
+        
         var teleportComponent = cameraContainer.gameObject.AddComponent<TeleportCreatorComponent>();
         teleportComponent.Initialize(_insideShip, _outsideShip, playerContainer);
     }

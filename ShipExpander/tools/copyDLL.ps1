@@ -25,7 +25,7 @@ Copy-Item "tools\config\BepInEx.cfg" -Destination "$PROFILE_BEPINEX_DIR\config"
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
 Copy-Item "bin\Debug\netstandard2.1\$DLL_NAME" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
 
-Write-Output "3:    Copying UnityBundles to plugins/scripts folder"
+Write-Output "4:    Copying UnityBundles to plugins/scripts folder"
 Copy-Item "AssetBundles\additionalshaders" -Destination "$PROFILE_BEPINEX_DIR\plugins" -Force
 Copy-Item "AssetBundles\additionalshaders" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force
 Copy-Item "AssetBundles\additionalprefabs" -Destination "$PROFILE_BEPINEX_DIR\scripts" -Force

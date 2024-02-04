@@ -9,16 +9,13 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
     private bool _playerIsOverlapping = false;
     private Transform _player;
     private Transform _receiver;
-    private HideInsideShipComponent _mainCamera;
-    private bool _isOutside;
+    private bool _isGoingOutside;
 
-    public void Initialize(Transform player, Transform receiver, HideInsideShipComponent hideInsideShipComponent,
-        bool isGoingOutside)
+    public void Initialize(Transform player, Transform receiver, bool shouldHideInsideShip)
     {
         _player = player;
         _receiver = receiver;
-        _mainCamera = hideInsideShipComponent;
-        _isOutside = isGoingOutside;
+        _isGoingOutside = shouldHideInsideShip;
     }
 
     // Update is called once per frame
@@ -34,29 +31,42 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
             // If this is true: The player has moved across the portal
             if (dotProduct < 0f)
             {
-                // TODO - Once I know the DOT product is sound, uncomment this.
-                // Teleport him!
-                float rotationDiff = -Quaternion.Angle(transform.rotation, _receiver.rotation);
-                rotationDiff += 180;
-                _player.Rotate(Vector3.up, rotationDiff);
-
-                Vector3 positionOffset = Quaternion.Euler(0f, rotationDiff, 0f) * portalToPlayer;
-                _player.position = _receiver.position + positionOffset;
-
-                if (_isOutside)
-                {
-                    _mainCamera.HideInsideShipLayer();
-                }
-                else
-                {
-                    _mainCamera.ShowInsideShipLayer();
-                }
-
-                _playerIsOverlapping = false;
+                MovePlayer(portalToPlayer);
+                HandleHidingInsideShip();
             }
 
             SELogger.Log(gameObject, $"Player is overlapping with collider component. Dot product: {dotProduct}");
         }
+    }
+
+    private void HandleHidingInsideShip()
+    {
+        var findAnyObjectByType = FindObjectsByType<InsideShipComponent>(FindObjectsSortMode.None);
+        foreach (var insideShipComponent in findAnyObjectByType)
+        {
+            if (_isGoingOutside)
+            {
+                insideShipComponent.Show();
+            }
+            else
+            {
+                insideShipComponent.Hide();
+            }
+        }
+    }
+
+    private void MovePlayer(Vector3 portalToPlayer)
+    {
+        // TODO - Once I know the DOT product is sound, uncomment this.
+        // Teleport him!
+        float rotationDiff = -Quaternion.Angle(transform.rotation, _receiver.rotation);
+        rotationDiff += 180;
+        _player.Rotate(Vector3.up, rotationDiff);
+
+        Vector3 positionOffset = Quaternion.Euler(0f, rotationDiff, 0f) * portalToPlayer;
+        _player.position = _receiver.position + positionOffset;
+
+        _playerIsOverlapping = false;
     }
 
     void OnTriggerEnter(Collider other)

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using BepInEx.Logging;
 using ShipExpander.Builder;
 using ShipExpander.Core;
