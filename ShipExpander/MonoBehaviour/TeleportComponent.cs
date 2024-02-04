@@ -46,11 +46,11 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
         {
             if (_isGoingOutside)
             {
-                insideShipComponent.Show();
+                insideShipComponent.Hide();
             }
             else
             {
-                insideShipComponent.Hide();
+                insideShipComponent.Show();
             }
         }
     }

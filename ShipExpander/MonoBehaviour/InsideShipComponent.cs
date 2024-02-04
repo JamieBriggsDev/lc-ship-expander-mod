@@ -20,7 +20,7 @@ public class InsideShipComponent : UnityEngine.MonoBehaviour
     
     public void Hide()
     {
-        this.gameObject.layer = ConstantVariables.HideObjectLayer;
+        this.gameObject.layer = ConstantVariables.InsideShipLayer;
     }
 
     public void Show()

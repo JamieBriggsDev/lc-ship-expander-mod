@@ -30,12 +30,6 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
 
     //public static AssetBundle ShaderAsset;
 
-    /*private void Awake()
-    {
-        // Load assets
-        ShaderAsset = UnityBundleHelper.LoadResource("lethalcompanyshaders");
-    }*/
-
     public void Initialize(GameObject insideShip, GameObject outsideShip, Transform player)
     {
         _player = player;
@@ -55,17 +49,20 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
         // Get player camera
         _playerCamera = GetComponentInChildren<Camera>();
         
-        GameObject gameCameraPrefab = UnityBundleHelper.GetCameraContainerPrefab();
+        /*GameObject gameCameraPrefab = UnityBundleHelper.GetCameraContainerPrefab();
         var cameraToCreate = gameCameraPrefab.GetComponentInChildren<Camera>();
         cameraToCreate.name = "TEST";
         cameraToCreate.allowHDR = false;
         cameraToCreate.allowMSAA = false;
+        cameraToCreate.cullingMask |= ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera*/
         // Create inside camera
         SELogger.Log(gameObject, "Creating inside camera name");
         _cameraInside = Instantiate(_playerCamera, transform, true);
         _cameraInside.name = "MainCameraInside";
         _cameraInside.tag = "Untagged";
         _cameraInside.aspect = _playerCamera.aspect;
+        _cameraInside.cullingMask |= 1 << ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera
+
         //SELogger.Log(gameObject, "Disabling Audio Listener on inside camera");
         //_cameraInside.GetComponent<AudioListener>().enabled = false;
         SELogger.Log(gameObject, "Adding TempFollowComponent to insideCamera");
@@ -81,6 +78,7 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
         _cameraOutside.name = "MainCameraOutside";
         _cameraOutside.tag = "Untagged";
         _cameraOutside.aspect = _playerCamera.aspect;
+        _cameraInside.cullingMask |= 1 << ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera
         //SELogger.Log(gameObject, "Disabling Audio Listener on inside camera");
         //_cameraOutside.GetComponent<AudioListener>().enabled = false;
         SELogger.Log(gameObject, "Adding TempFollowComponent to outsideCamera");
@@ -110,21 +108,8 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
 
 
         SELogger.Log(gameObject, "Initializing colliderBoxes up");
-        var mainCameraHideFromCameraComponent = _playerCamera.gameObject.AddComponent<HideInsideShipComponent>();
-        mainCameraHideFromCameraComponent.ShowInsideShipLayer();
-        ArrayList layerNames=new ArrayList();
-        for(int i=8;i<=31;i++) //user defined layers start with layer 8 and unity supports 31 layers
-        {
-            var layerN=LayerMask.LayerToName(i); //get the name of the layer
-            SELogger.Log(gameObject, $"Layer found({i}) - {layerN}");
-        }
-        SELogger.Log(gameObject, $"insideShip.layer = ({insideShip.layer}){LayerMask.LayerToName(insideShip.layer)}");
-        /*
-        insideShip.layer = ConstantVariables.InsideShipLayer;
-        */
-        SELogger.Log(gameObject, $"insideShip.layer = ({insideShip.layer}){LayerMask.LayerToName(insideShip.layer)}");
-        _insideColliderBox.Initialize(_player, _outsideColliderBox.transform, mainCameraHideFromCameraComponent, true);
-        _outsideColliderBox.Initialize(_player, _insideColliderBox.transform, mainCameraHideFromCameraComponent, false);
+        _insideColliderBox.Initialize(_player, _outsideColliderBox.transform, true);
+        _outsideColliderBox.Initialize(_player, _insideColliderBox.transform, false);
     }
 
     private GameObject CreatePlane(Camera camera, Transform parentTransform, string planeName, bool flipped = false)
