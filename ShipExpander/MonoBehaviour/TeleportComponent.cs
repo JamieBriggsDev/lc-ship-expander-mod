@@ -41,16 +41,16 @@ public class TeleportComponent : UnityEngine.MonoBehaviour
 
     private void HandleHidingInsideShip()
     {
-        var findAnyObjectByType = FindObjectsByType<InsideShipComponent>(FindObjectsSortMode.None);
+        var findAnyObjectByType = FindObjectsByType<InsideShipLayerToggleComponent>(FindObjectsSortMode.None);
         foreach (var insideShipComponent in findAnyObjectByType)
         {
             if (_isGoingOutside)
             {
-                insideShipComponent.Hide();
+                insideShipComponent.EnableLayer();
             }
             else
             {
-                insideShipComponent.Show();
+                insideShipComponent.DisableLayer();
             }
         }
     }

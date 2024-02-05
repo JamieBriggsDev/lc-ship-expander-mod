@@ -108,7 +108,20 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private void LateUpdate()
     {
         FixInsideShipHierarchy();
+        FixLightingForInsideShip();
         CopyObjectsForOutside();
+    }
+
+    private void FixLightingForInsideShip()
+    {
+        foreach (var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
+        {
+            if (light.renderingLayerMask != (light.renderingLayerMask | (1 << ConstantVariables.InsideShipLayer)))
+            {
+                //light.renderingLayerMask |= 1 << ConstantVariables.InsideShipLayer;
+                light.cullingMask |= 1 << ConstantVariables.InsideShipLayer;
+            }
+        }
     }
 
     private void FixInsideShipHierarchy()
@@ -118,16 +131,32 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         {
             var childGameObject = child.gameObject;
 
+
             // Should ignore if child has physics prop component as props should not belong to ship
-            if (child.GetComponent<PhysicsProp>() != null ||
-                _toIgnoreInside.Contains(childGameObject.name) || _toIgnore.Contains(childGameObject.name)) continue;
+
+
+            if (child.GetComponent<PhysicsProp>() != null) continue;
+            if (_toIgnoreInside.Contains(childGameObject.name) || _toIgnore.Contains(childGameObject.name)) continue;
             // Should ignore if child is helper container object for this mod or null
             if (childGameObject == _insideShip || childGameObject == _outsideShip || child == null) continue;
 
+
             //SELogger.Log(gameObject, $"1: Moving object into insideShip: {child.gameObject.name}");
 
+
             var childNetworkObject = childGameObject.GetComponent<NetworkObject>();
+
+
             //ParentHelper.SetParent(childGameObject, _insideShip);
+
+            // Adds component which toggles the game objects layer with it's original and a new one
+            // StartGameLever does not like this component.
+            if (childGameObject.gameObject.name != "StartGameLever" &&
+                childGameObject.GetComponent<InsideShipLayerToggleComponent>() == null)
+            {
+                childGameObject.AddComponent<InsideShipLayerToggleComponent>();
+            }
+
             if (childNetworkObject != null)
             {
                 //SELogger.Log(gameObject, $"2: (NE) Changing child.transform.parent: {child.gameObject.name}");
@@ -144,9 +173,10 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
                 child.transform.parent = _insideShip.transform;
             }
 
-            if (childGameObject.GetComponent<InsideShipComponent>() != null) continue;
-
-            childGameObject.AddComponent<InsideShipComponent>();
+            if (childGameObject.GetComponent<InsideShipComponent>() == null)
+            {
+                childGameObject.AddComponent<InsideShipComponent>();
+            }
         }
 
         // Some items are not found within the hangarShip gameObject. Get them now
@@ -239,7 +269,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
-        
+
         var teleportComponent = cameraContainer.gameObject.AddComponent<TeleportCreatorComponent>();
         teleportComponent.Initialize(_insideShip, _outsideShip, playerContainer);
     }
