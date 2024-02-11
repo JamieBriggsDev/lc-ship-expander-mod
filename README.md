@@ -1,6 +1,12 @@
 # Lethal Company - Ship Expander Mod
 
+![Ship Expander Thunderstore Icon](ShipExpander%2Ficon.png)
+
+## Status
+[![.NET](https://github.com/JamieBriggsDev/lc-ship-expander-mod/actions/workflows/dotnet.yml/badge.svg)](https://github.com/JamieBriggsDev/lc-ship-expander-mod/actions/workflows/dotnet.yml)
+
 ## Setup
+### Add BepInEx source to NuGet.Config
 In order to be able to download the correct NuGet dependencies,
 a new source for BepInEx needs added to `NuGet.Config`.
 
@@ -8,8 +14,12 @@ a new source for BepInEx needs added to `NuGet.Config`.
 
 Following this, do a NuGet restore.
 
-> This needs modifying to be more customizable per machine
+### R2Modman setup for automatic DLL copying
+As part of the dotnet build, if built in Visual Studio or Jetbrain's Rider, dotnet will run a 
+script which copies the required dll and any supporting files to the users R2Modman profile. To do
+this, two environment variables need to be set:
+- $R2MODMAN_DIR (e.g. `C:\Projects\LethalCompanyMods\r2modmanPlus-local`)
+- $R2MODMAN_LETHALCOMPANY_PROFILE (e.g. `MyTestProfile`. This is the profile which you use in R2Modman to test the dll is working as expected)
 
-Next open the file ./ShipExpander/copyDLL.bat and change the second
-parameter to be where the Profile was setup for r2modman and LethalCompany
-to allow the DDL to be automatically copied to the correct profile.
+If developing on Windows, I recommend using Microsoft's [PowerToys](https://apps.microsoft.com/detail/XP89DCGQ3K6VLD?hl=en-US&gl=US) to do this. 
+There is a tool to create profiles of environment variables which you can enable or disable at your own leisure.

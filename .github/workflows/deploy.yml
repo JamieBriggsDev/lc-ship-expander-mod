@@ -1,0 +1,69 @@
+name: Publish
+
+# Run when a new release is... released
+on:
+  release:
+    types: [published]
+
+
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build ShipExpander --no-restore # Defaults to debug
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+      - name: Create folder for publish
+        shell: pwsh
+        run: ./createPublishFolder.ps1 -config Release
+      - uses: actions/upload-artifact@master
+        with:
+          name: to-publish-release
+          path: ./ShipExpander/bin/publish-Release
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - id: actions-checkout
+        uses: actions/checkout@v3
+
+      - id: download-artifact
+        uses: actions/download-artifact@master
+        with:
+          name: to-publish-release
+          path: ./ShipExpander/bin/publish-Release
+        
+      - id: publish
+        uses: GreenTF/upload-thunderstore-package@v4.3
+        with:
+          token: ${{ secrets.TS_TOKEN }}
+          community: lethal-company
+          namespace: JBriggs_DEV # the thunderstore 'team' to publish under
+          name: ShipExpander # the name of the package
+          description: ShipExpander mod
+          version: ${{ github.ref_name }} # Use the tag as the package version
+          path: './ShipExpander/bin/publish-Release' # Path to ShipExpander dlls
+          repo: thunderstore.io
+          categories: | # <-- notice this pipe character
+            mods
+          deps: | # <-- notice this pipe character
+            BepInEx-BepInExPack-5.4.21
+            
+      - id: get-url
+        name: Get download URL
+        run: echo ${{ steps.publish.outputs.url }}
+      
+      
+
+
+        
