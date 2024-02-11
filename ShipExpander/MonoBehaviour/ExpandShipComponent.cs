@@ -58,6 +58,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         "CatwalkUnderneathSupports",
         "ClimbOntoCatwalkHelper",
         "CatwalkRailLiningB",
+        "Ladder",
         "LadderShort",
         "LadderShort (1)",
         "LargePipe (1)"
@@ -140,7 +141,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             // Should ignore if child has physics prop component as props should not belong to ship
 
 
-            if (child.GetComponent<PhysicsProp>() != null) continue;
             if (_toIgnoreInside.Contains(childGameObject.name) || _toIgnore.Contains(childGameObject.name)) continue;
             // Should ignore if child is helper container object for this mod or null
             if (childGameObject == _insideShip || childGameObject == _outsideShip || child == null) continue;
@@ -156,11 +156,15 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
             // Adds component which toggles the game objects layer with it's original and a new one
             // StartGameLever does not like this component.
-            if (childGameObject.gameObject.name != "StartGameLever" &&
+            
+            _insideShip.AddComponent<InsideShipLayerToggleComponent>();
+            /*if (childGameObject.gameObject.name != "StartGameLever" &&
                 childGameObject.GetComponent<InsideShipLayerToggleComponent>() == null)
             {
                 childGameObject.AddComponent<InsideShipLayerToggleComponent>();
-            }
+            }*/
+            
+            if (child.GetComponent<PhysicsProp>() != null) continue;
 
             if (childNetworkObject != null)
             {
@@ -184,6 +188,8 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             }
         }
 
+        // TODO 11/02/2024: Should use object toIgnoreInside to move objects to _outsideShip
+        
         // Some items are not found within the hangarShip gameObject. Get them now
         var specialGameObjectNames = new List<string>()
         {
@@ -218,12 +224,12 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
                 SELogger.Log(gameObject,
                     $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})",
                     LogLevel.Debug);
-                TransformHelper.MoveObject(instantiatedOutsideObject, ConstantVariables.InsideShipOffset);
+                //TransformHelper.MoveObject(instantiatedOutsideObject, ConstantVariables.InsideShipOffset);
                 // Why do I need to do this twice for this object specifically?
-                if (gameObjectName.Equals("ShipInside"))
-                {
-                    TransformHelper.MoveObject(instantiatedOutsideObject, -ConstantVariables.InsideShipOffset);
-                }
+                //if (gameObjectName.Equals("ShipInside"))
+                //{
+                //    TransformHelper.MoveObject(instantiatedOutsideObject, -ConstantVariables.InsideShipOffset);
+                //}
 
                 SELogger.Log(gameObject,
                     $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})",
