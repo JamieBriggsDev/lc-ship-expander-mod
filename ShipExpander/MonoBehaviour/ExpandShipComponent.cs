@@ -116,10 +116,15 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         foreach (var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
         {
-            if (light.renderingLayerMask != (light.renderingLayerMask | (1 << ConstantVariables.InsideShipLayer)))
+            if (!light.LayerCullingIncludes(1 << ConstantVariables.InsideShipLayer))
+                //if (light.cullingMask != (light.cullingMask | (1 << ConstantVariables.InsideShipLayer)))
+                //if ((light.cullingMask & (1 << ConstantVariables.InsideShipLayer)) != 0)
             {
-                //light.renderingLayerMask |= 1 << ConstantVariables.InsideShipLayer;
-                light.cullingMask |= 1 << ConstantVariables.InsideShipLayer;
+                //SELogger.Log(gameObject,
+                //    $"Adding layer {ConstantVariables.InsideShipLayer} to object {light.name}");
+                //SELogger.Log(gameObject, $"Before: {light.cullingMask}");
+                light.LayerCullingShow(1 << ConstantVariables.InsideShipLayer);
+                //SELogger.Log(gameObject, $"After: {light.cullingMask}");
             }
         }
     }

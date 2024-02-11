@@ -61,7 +61,8 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
         _cameraInside.name = "MainCameraInside";
         _cameraInside.tag = "Untagged";
         _cameraInside.aspect = _playerCamera.aspect;
-        _cameraInside.cullingMask |= 1 << ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera
+        _cameraInside.LayerCullingShow(1 << ConstantVariables.InsideShipLayer); // Add hide inside ship to teleport camera
+        //_cameraInside.cullingMask |= 1 << ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera
 
         //SELogger.Log(gameObject, "Disabling Audio Listener on inside camera");
         //_cameraInside.GetComponent<AudioListener>().enabled = false;
@@ -78,7 +79,8 @@ public class TeleportCreatorComponent : UnityEngine.MonoBehaviour
         _cameraOutside.name = "MainCameraOutside";
         _cameraOutside.tag = "Untagged";
         _cameraOutside.aspect = _playerCamera.aspect;
-        _cameraInside.cullingMask |= 1 << ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera
+        _cameraOutside.LayerCullingShow(1 << ConstantVariables.InsideShipLayer); // Add hide inside ship to teleport camera
+        //_cameraOutside.cullingMask |= 1 << ConstantVariables.InsideShipLayer; // Add hide inside ship to teleport camera
         //SELogger.Log(gameObject, "Disabling Audio Listener on inside camera");
         //_cameraOutside.GetComponent<AudioListener>().enabled = false;
         SELogger.Log(gameObject, "Adding TempFollowComponent to outsideCamera");
