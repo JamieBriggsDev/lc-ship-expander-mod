@@ -6,6 +6,7 @@ $ASSEMBLY_CSHARP_DLL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\As
 $UNITY_ENGINE_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\UnityEngine.dll"
 $UNITY_ENGINE_NETWORK_RUNTIME_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll"
 $UNITY_ENGINE_NETWORK_COMPONENTS_RUNTIME_DDL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity.Netcode.Components.dll"
+$UNITY_ENGINE_HIGH_DEFINITION_RUNTIME_DLL = "$LETHAL_COMPANY_DIRECTORY\Lethal Company_Data\Managed\Unity.RenderPipelines.HighDefinition.Runtime.dll"
 
 $DOWNLOADS_DIR = ".\_downloads"
 
@@ -13,12 +14,14 @@ Write-Output "Assembly-CSharp.dll location: $ASSEMBLY_CSHARP_DLL";
 Write-Output "UnityEngine.dll location: $ASSEMBLY_CSHARP_DLL";
 Write-Output "Unity.Netcode.Runtime.dll location: $UNITY_ENGINE_NETWORK_RUNTIME_DDL";
 Write-Output "Unity.Netcode.Components.dll location: $UNITY_ENGINE_NETWORK_COMPONENTS_RUNTIME_DDL";
+Write-Output "Unity.RenderPipelines.HighDefinition.Runtime.dll location: $UNITY_ENGINE_HIGH_DEFINITION_RUNTIME_DLL";
 
 
 Copy-Item $ASSEMBLY_CSHARP_DLL -Destination ".\externalDLLs"
 Copy-Item $UNITY_ENGINE_DDL -Destination ".\externalDLLs"
 Copy-Item $UNITY_ENGINE_NETWORK_RUNTIME_DDL -Destination ".\externalDLLs"
 Copy-Item $UNITY_ENGINE_NETWORK_COMPONENTS_RUNTIME_DDL -Destination ".\externalDLLs"
+Copy-Item $UNITY_ENGINE_HIGH_DEFINITION_RUNTIME_DLL -Destination ".\externalDLLs"
 
 Write-Output "##########    Initial setup               ##########"
 Write-Output "Recreating downloads folder"

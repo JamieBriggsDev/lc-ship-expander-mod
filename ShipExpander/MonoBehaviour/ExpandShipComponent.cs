@@ -7,6 +7,7 @@ using ShipExpander.Core;
 using ShipExpander.Helper;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace ShipExpander.MonoBehaviour;
@@ -110,7 +111,15 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         FixInsideShipHierarchy();
         FixLightingForInsideShip();
+        FixVolumetricEffectsForInsideShip();
         CopyObjectsForOutside();
+    }
+
+    private void FixVolumetricEffectsForInsideShip()
+    {
+        foreach (var volumetric in FindObjectsByType<LocalVolumetricFog>(FindObjectsSortMode.None))
+        {
+        }
     }
 
     private void FixLightingForInsideShip()

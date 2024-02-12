@@ -31,6 +31,7 @@
     <Reference Include="UnityEngine" HintPath="..\externalDLLs\UnityEngine.dll" Publicize="true"/>
     <Reference Include="Unity.Netcode.Runtime" HintPath="..\externalDLLs\Unity.Netcode.Runtime.dll" Publicize="true"/>
     <Reference Include="Unity.Netcode.Components" HintPath="..\externalDLLs\Unity.Netcode.Components.dll" Publicize="true"/>
+    <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime" HintPath="..\externalDLLs\Unity.RenderPipelines.HighDefinition.Runtime.dll" Publicize="true"/>
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
