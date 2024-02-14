@@ -7,6 +7,7 @@ using ShipExpander.Core;
 using ShipExpander.Helper;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace ShipExpander.MonoBehaviour;
@@ -18,7 +19,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private NetworkObject _insideShipNetworkObject;
     private GameObject _outsideShip;
     private NetworkObject _outsideShipNetworkObject;
-    
 
 
     private List<string> _toIgnore = new()
@@ -31,25 +31,40 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private List<string> _toBeCopiedOutside = new()
     {
         "WallInsulator",
+        "ShipModels2b", // Outside ship parts
+        "ShipInside", // More outside ship parts, despite naming
+        // Lighting
+        "ShipElectricLights"
+    };
+
+    private List<string> _toIgnoreInside = new()
+    {
+        "Cameras",
+        // Ship stuff
+        "Cube.004",
+        "Cube.005",
+        "Cube.006",
+        "Cube.007",
+        "Cube.008",
+        "ThrusterBackRight",
+        "ThrusterBackLeft",
+        "ThrusterFrontRight",
+        "ThrusterFrontLeft",
+        "ShipSupportBeams",
         // Catwalk stuff should really be moved to _toIgnoreInside but leave for debugging
+        "ShipRails",
+        "ShipRailPosts",
         "CatwalkRailLining",
         "CatwalkShip",
         "CatwalkUnderneathSupports",
         "ClimbOntoCatwalkHelper",
         "CatwalkRailLiningB",
+        "Ladder",
         "LadderShort",
         "LadderShort (1)",
+        "LargePipe (1)"
         // End of catwalk stuff
-        "ShipRails",
-        "ShipModels2b", // Outside ship parts
-        "ShipInside", // More outside ship parts, despite naming
     };
-
-    private List<string> _toIgnoreInside = new()
-    {
-        "Cameras"
-    };
-
 
     private void Start()
     {
@@ -85,9 +100,6 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
             SELogger.Log(gameObject, $"Moving niche object {findObjectByName.name}");
             TransformHelper.MoveObject(findObjectByName, ConstantVariables.InsideShipOffset);
         }
-        /*
-            findObjectByName.transform.localPosition += ConstantVariables.InsideShipOffset;
-        */
 
 
         SELogger.Log(gameObject, "Setting up teleport");
@@ -98,7 +110,33 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     private void LateUpdate()
     {
         FixInsideShipHierarchy();
+        FixLightingForInsideShip();
+        FixVolumetricEffectsForInsideShip(); 
         CopyObjectsForOutside();
+    }
+
+    private void FixVolumetricEffectsForInsideShip()
+    {
+        foreach (var volumetric in FindObjectsByType<LocalVolumetricFog>(FindObjectsSortMode.None))
+        {
+        }
+    }
+
+    private void FixLightingForInsideShip()
+    {
+        foreach (var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
+        {
+            if (!light.LayerCullingIncludes(1 << ConstantVariables.InsideShipLayer))
+                //if (light.cullingMask != (light.cullingMask | (1 << ConstantVariables.InsideShipLayer)))
+                //if ((light.cullingMask & (1 << ConstantVariables.InsideShipLayer)) != 0)
+            {
+                //SELogger.Log(gameObject,
+                //    $"Adding layer {ConstantVariables.InsideShipLayer} to object {light.name}");
+                //SELogger.Log(gameObject, $"Before: {light.cullingMask}");
+                light.LayerCullingShow(1 << ConstantVariables.InsideShipLayer);
+                //SELogger.Log(gameObject, $"After: {light.cullingMask}");
+            }
+        }
     }
 
     private void FixInsideShipHierarchy()
@@ -108,16 +146,35 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
         {
             var childGameObject = child.gameObject;
 
+
             // Should ignore if child has physics prop component as props should not belong to ship
-            if (child.GetComponent<PhysicsProp>() != null ||
-                _toIgnoreInside.Contains(childGameObject.name) || _toIgnore.Contains(childGameObject.name)) continue;
+
+
+            if (_toIgnoreInside.Contains(childGameObject.name) || _toIgnore.Contains(childGameObject.name)) continue;
             // Should ignore if child is helper container object for this mod or null
             if (childGameObject == _insideShip || childGameObject == _outsideShip || child == null) continue;
 
+
             //SELogger.Log(gameObject, $"1: Moving object into insideShip: {child.gameObject.name}");
 
+
             var childNetworkObject = childGameObject.GetComponent<NetworkObject>();
+
+
             //ParentHelper.SetParent(childGameObject, _insideShip);
+
+            // Adds component which toggles the game objects layer with it's original and a new one
+            // StartGameLever does not like this component.
+            
+            _insideShip.AddComponent<InsideShipLayerToggleComponent>();
+            /*if (childGameObject.gameObject.name != "StartGameLever" &&
+                childGameObject.GetComponent<InsideShipLayerToggleComponent>() == null)
+            {
+                childGameObject.AddComponent<InsideShipLayerToggleComponent>();
+            }*/
+            
+            if (child.GetComponent<PhysicsProp>() != null) continue;
+
             if (childNetworkObject != null)
             {
                 //SELogger.Log(gameObject, $"2: (NE) Changing child.transform.parent: {child.gameObject.name}");
@@ -134,11 +191,14 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
                 child.transform.parent = _insideShip.transform;
             }
 
-            if (childGameObject.GetComponent<InsideShipComponent>() != null) continue;
-
-            childGameObject.AddComponent<InsideShipComponent>();
+            if (childGameObject.GetComponent<InsideShipComponent>() == null)
+            {
+                childGameObject.AddComponent<InsideShipComponent>();
+            }
         }
 
+        // TODO 11/02/2024: Should use object toIgnoreInside to move objects to _outsideShip
+        
         // Some items are not found within the hangarShip gameObject. Get them now
         var specialGameObjectNames = new List<string>()
         {
@@ -173,12 +233,12 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
                 SELogger.Log(gameObject,
                     $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})",
                     LogLevel.Debug);
-                TransformHelper.MoveObject(instantiatedOutsideObject, ConstantVariables.InsideShipOffset);
+                //TransformHelper.MoveObject(instantiatedOutsideObject, ConstantVariables.InsideShipOffset);
                 // Why do I need to do this twice for this object specifically?
-                if (gameObjectName.Equals("ShipInside"))
-                {
-                    TransformHelper.MoveObject(instantiatedOutsideObject, -ConstantVariables.InsideShipOffset);
-                }
+                //if (gameObjectName.Equals("ShipInside"))
+                //{
+                //    TransformHelper.MoveObject(instantiatedOutsideObject, -ConstantVariables.InsideShipOffset);
+                //}
 
                 SELogger.Log(gameObject,
                     $"Copied object transforms: T({instantiatedOutsideObject.transform.position}) - LT({instantiatedOutsideObject.transform.localPosition})",
@@ -229,7 +289,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
-        
+
         var teleportComponent = cameraContainer.gameObject.AddComponent<TeleportCreatorComponent>();
         teleportComponent.Initialize(_insideShip, _outsideShip, playerContainer);
     }

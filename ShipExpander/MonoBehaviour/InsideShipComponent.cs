@@ -9,8 +9,6 @@ public class InsideShipComponent : UnityEngine.MonoBehaviour
     private void Start()
     {
         this.transform.localPosition += ConstantVariables.InsideShipOffset;
-        initialLayerValue = gameObject.layer;
-        //Show();
     }
 
     private void OnDestroy()
@@ -18,13 +16,5 @@ public class InsideShipComponent : UnityEngine.MonoBehaviour
         this.transform.localPosition -= ConstantVariables.InsideShipOffset;
     }
     
-    public void Hide()
-    {
-        this.gameObject.layer = ConstantVariables.HideObjectLayer;
-    }
-
-    public void Show()
-    {
-        this.gameObject.layer = initialLayerValue;
-    }
+    
 }
