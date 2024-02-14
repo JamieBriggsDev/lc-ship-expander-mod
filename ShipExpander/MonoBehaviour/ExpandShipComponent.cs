@@ -111,7 +111,7 @@ public class ExpandShipComponent : UnityEngine.MonoBehaviour
     {
         FixInsideShipHierarchy();
         FixLightingForInsideShip();
-        FixVolumetricEffectsForInsideShip();
+        FixVolumetricEffectsForInsideShip(); 
         CopyObjectsForOutside();
     }
 
